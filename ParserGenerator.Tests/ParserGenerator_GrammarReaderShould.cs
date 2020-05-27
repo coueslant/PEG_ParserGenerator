@@ -10,7 +10,7 @@ namespace ParserGenerator.Tests {
         }
 
         [Test]
-        public void ReadCorrectNumberOfNonTerminals () {
+        public void ReadCorrectNumberOfRules () {
             Assert.Fail ();
         }
     }
