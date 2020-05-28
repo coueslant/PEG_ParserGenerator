@@ -11,6 +11,13 @@ namespace ParserGenerator
             if (args.Length == 1)
             {
                 Parse(args[0]);
+                // Tokenizer _tokenizer = new Tokenizer();
+                // _tokenizer.SetTokenGenerator(new TokenGenerator(System.IO.File.ReadAllText(args[0])));
+
+                // foreach (Token _token in _tokenizer.Tokenize())
+                // {
+                //     System.Console.WriteLine(_token.Type.ToString() + " : " + _token.String);
+                // }
             }
             else
             {
@@ -21,7 +28,7 @@ namespace ParserGenerator
         {
             string grammarString = System.IO.File.ReadAllText(grammarFile);
 
-            PEGParser parser = new PEGParser(grammarString);
+            GrammarParser parser = new GrammarParser(grammarString);
 
             List<Rule> _rules = new List<Rule>();
 

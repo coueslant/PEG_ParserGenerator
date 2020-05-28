@@ -5,7 +5,7 @@ namespace ParserGenerator
     public class Tokenizer
     {
         private int _pos;
-        private ITokenGenerator _tokenGen;
+        private TokenGenerator _tokenGen;
         private List<Token> _tokens;
 
         public Tokenizer()
@@ -40,9 +40,21 @@ namespace ParserGenerator
             _pos = position;
         }
 
-        public void SetTokenGenerator(ITokenGenerator _tokenGenerator)
+        public void SetTokenGenerator(TokenGenerator _tokenGenerator)
         {
             _tokenGen = _tokenGenerator;
+        }
+
+        public List<Token> Tokenize()
+        {
+            List<Token> _tokens = new List<Token>();
+
+            while (PeekToken().Type != TokenKind.ENDMARKER)
+            {
+                _tokens.Add(NextToken());
+            }
+
+            return _tokens;
         }
     }
 }

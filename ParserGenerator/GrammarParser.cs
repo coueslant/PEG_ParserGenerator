@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 namespace ParserGenerator
 {
-    public class PEGParser : Parser
+    public class GrammarParser : Parser
     {
-        public PEGParser(string grammarString)
+        public GrammarParser(string grammarString)
         {
-            GetTokenizer().SetTokenGenerator(new PEGTokenGenerator(grammarString));
+            GetTokenizer().SetTokenGenerator(new TokenGenerator(grammarString));
             _lineCount = 0;
         }
 
@@ -15,26 +15,30 @@ namespace ParserGenerator
         {
             _parsing = "Grammar";
             int _pos = Mark();
-            Rule _rule;
-            _rule = Rule();
-            if (_rule != null)
+            List<Rule> _rules;
+            _rules = Rules();
+            Token _endmarkerToken = Expect("ENDMARKER");
+            if (_endmarkerToken != null)
             {
-                List<Rule> _rules = new List<Rule>();
-                while (_rule != null)
-                {
-                    _rules.Add(_rule);
-                    _rule = Rule();
-                }
-                Token _endmarkerToken = Expect("ENDMARKER");
-                if (_endmarkerToken != null)
-                {
-                    System.Console.WriteLine("Successfully parsed grammar.");
-                    return _rules;
-                }
+                System.Console.WriteLine("Successfully parsed grammar.");
+                return _rules;
             }
             Reset(_pos);
             // failed to parse grammar
             System.Console.WriteLine("Failed to parse grammar.");
+            return null;
+        }
+
+        private List<Rule> Rules()
+        {
+            Rule _rule = Rule();
+            if (_rule != null)
+            {
+                List<Rule> _rules = new List<Rule>();
+                _rules.Add(_rule);
+                _rules.AddRange(Rules());
+                return _rules;
+            }
             return null;
         }
 
@@ -115,17 +119,6 @@ namespace ParserGenerator
                 return _string.String;
             }
 
-            Token _number = Expect("NUMBER");
-            if (_number != null)
-            {
-                return _number.String;
-            }
-
-            Token _symbol = Expect("SYMBOL");
-            if (_symbol != null)
-            {
-                return _symbol.String;
-            }
             // failed to parse item
             System.Console.WriteLine("Failed to parse item at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
             return null;

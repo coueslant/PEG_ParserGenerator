@@ -1,14 +1,20 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 namespace ParserGenerator
 {
-    public class PEGTokenGenerator : ITokenGenerator
+    public class TokenGenerator
     {
         private string _inputPEG;
         private int _pos;
-        public PEGTokenGenerator(string inputPEG)
+
+        private HashSet<char> _symbolSet;
+        private HashSet<char> _OPSet;
+        public TokenGenerator(string inputPEG)
         {
             _inputPEG = inputPEG;
+            _symbolSet = (new Symbols()).GetSymbols();
+            _OPSet = (new OPs()).GetOPs();
             _pos = 0;
         }
         public Token NextToken()
@@ -46,16 +52,21 @@ namespace ParserGenerator
                 return _token;
             }
 
-            if ((char)Current() == ':' || (char)Current() == '(' || (char)Current() == ')' || (char)Current() == '&' || (char)Current() == '*' || (char)Current() == '*' || (char)Current() == '+' || (char)Current() == '?' || (char)Current() == '|' || (char)Current() == '[' || (char)Current() == ']' || (char)Current() == '-' || (char)Current() == '/')
+            if (_symbolSet.Contains((char)Current()))
             {
-                Token _token = new Token(TokenKind.SYMBOL, ((char)Current()).ToString());
+                return ConsumeSymbol();
+            }
+
+            if (_OPSet.Contains((char)Current()))
+            {
+                Token _token = new Token(TokenKind.OP, ((char)Current()).ToString());
                 Next();
                 return _token;
             }
 
             if (char.IsWhiteSpace((char)Current()))
             {
-                Token _token = new Token(TokenKind.WHITESPACE, "WHITESPACE");
+                Token _token = new Token(TokenKind.WHITESPACE, ((char)Current()).ToString());
                 Next();
                 return _token;
             }
@@ -122,6 +133,79 @@ namespace ParserGenerator
             }
 
             return new Token(TokenKind.NUMBER, _string.ToString());
+        }
+
+        private Token ConsumeSymbol()
+        {
+            TokenKind _kind;
+            switch ((char)Current())
+            {
+                case '(':
+                    _kind = TokenKind.LPAREN;
+                    break;
+                case ')':
+                    _kind = TokenKind.RPAREN;
+                    break;
+                case '[':
+                    _kind = TokenKind.LSQUARE;
+                    break;
+                case ']':
+                    _kind = TokenKind.RSQUARE;
+                    break;
+                case ',':
+                    _kind = TokenKind.COMMA;
+                    break;
+                case ';':
+                    _kind = TokenKind.SEMICOLON;
+                    break;
+                case '-':
+                    _kind = TokenKind.MINUS;
+                    break;
+                case '/':
+                    _kind = TokenKind.SLASH;
+                    break;
+                case '<':
+                    _kind = TokenKind.LESSTHAN;
+                    break;
+                case '>':
+                    _kind = TokenKind.GREATERTHAN;
+                    break;
+                case '=':
+                    _kind = TokenKind.EQUAL;
+                    break;
+                case '.':
+                    _kind = TokenKind.DOT;
+                    break;
+                case '%':
+                    _kind = TokenKind.PERCENT;
+                    break;
+                case '{':
+                    _kind = TokenKind.LBRACE;
+                    break;
+                case '}':
+                    _kind = TokenKind.RBRACE;
+                    break;
+                case '~':
+                    _kind = TokenKind.TILDE;
+                    break;
+                case '^':
+                    _kind = TokenKind.CIRCUMFLEX;
+                    break;
+                case '@':
+                    _kind = TokenKind.AT;
+                    break;
+                default:
+                    _kind = TokenKind.NULLTOKEN;
+                    break;
+            }
+            if (_kind != TokenKind.NULLTOKEN)
+            {
+                Token _token = new Token(_kind, ((char)Current()).ToString());
+                Next();
+                return _token;
+            }
+            // failed to consume a symbol
+            return null;
         }
 
         private int Current()
