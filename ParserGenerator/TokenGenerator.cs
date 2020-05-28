@@ -200,7 +200,7 @@ namespace ParserGenerator
             }
             if (_kind != TokenKind.NULLTOKEN)
             {
-                Token _token = new Token(_kind, ((char)Current()).ToString());
+                Token _token = new Token(TokenKind.SYMBOL, ((char)Current()).ToString());
                 Next();
                 return _token;
             }

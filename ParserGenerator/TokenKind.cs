@@ -27,6 +27,7 @@ namespace ParserGenerator
         RBRACE,
         TILDE,
         CIRCUMFLEX,
-        AT
+        AT,
+        SYMBOL
     }
 }

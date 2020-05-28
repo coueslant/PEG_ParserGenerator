@@ -48,7 +48,7 @@ namespace ParserGenerator
                 foreach (Meta _meta in _grammar.Metas)
                 {
                     System.Console.WriteLine("Name: " + _meta.Name);
-                    System.Console.WriteLine("    -> " + _meta.String);
+                    System.Console.WriteLine("\t-> " + _meta.String);
                 }
                 System.Console.WriteLine("+++++");
                 System.Console.WriteLine();
@@ -59,16 +59,20 @@ namespace ParserGenerator
                 System.Console.WriteLine("+++++");
                 foreach (Rule _rule in _grammar.Rules)
                 {
-                    System.Console.WriteLine("Name: " + _rule.GetName());
+                    System.Console.WriteLine("Name: " + _rule.Name);
                     System.Console.WriteLine("Alternatives:");
-                    foreach (Alternative _alternative in _rule.GetAlternatives())
+                    foreach (Alternative _alternative in _rule.Alternatives)
                     {
-                        System.Console.Write("             -> ");
-                        foreach (string _alternativeItem in _alternative.GetItems())
+                        System.Console.Write("\t-> ");
+                        foreach (string _alternativeItem in _alternative.Items)
                         {
                             System.Console.Write(_alternativeItem + " ");
                         }
                         System.Console.WriteLine();
+                        if (_alternative.Action.Length != 0)
+                        {
+                            System.Console.WriteLine("\t   Action: " + _alternative.Action);
+                        }
                     }
                 }
                 System.Console.WriteLine("+++++");
