@@ -1,10 +1,15 @@
+using System.Collections.Generic;
 using System.Linq;
 namespace ParserGenerator {
     public class Tokenizer {
+        private int _pos;
+        private ITokenGenerator _tokenGen;
+        private List<Token> _tokens;
 
-        private int _pos = 0;
-        private TokenGenerator _tokenGen = new ITokenGenerator ();
-        private List<Token> _tokens = new List<Token> ();
+        public Tokenizer () {
+            _pos = 0;
+            _tokens = new List<Token> ();
+        }
 
         public Token NextToken () {
             Token _token = PeekToken ();
@@ -13,7 +18,7 @@ namespace ParserGenerator {
         }
 
         public Token PeekToken () {
-            if (_pos = Length (_tokens)) {
+            if (_pos == _tokens.Count) {
                 _tokens.Append (_tokenGen.NextToken ());
             }
             return _tokens[_pos];
@@ -25,6 +30,10 @@ namespace ParserGenerator {
 
         public void Reset (int position) {
             _pos = position;
+        }
+
+        public void SetTokenGenerator (ITokenGenerator _tokenGenerator) {
+            _tokenGen = _tokenGenerator;
         }
     }
 }

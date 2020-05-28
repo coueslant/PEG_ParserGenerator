@@ -3,6 +3,8 @@ namespace ParserGenerator {
         NAME,
         STRING,
         NUMBER,
+        SYMBOL,
+        NEWLINE,
         ENDMARKER
     }
 }

@@ -2,9 +2,9 @@ using System;
 using System.Text;
 namespace ParserGenerator {
     public class PEGTokenGenerator : ITokenGenerator {
-        private String _inputPEG;
+        private string _inputPEG;
         private int _pos;
-        public PEGTokenGenerator (String inputPEG) {
+        public PEGTokenGenerator (string inputPEG) {
             _inputPEG = inputPEG;
             _pos = 0;
         }
@@ -21,12 +21,24 @@ namespace ParserGenerator {
                 return ConsumeString ();
             }
 
-            if (Char.IsLetter (Current ())) {
+            if (char.IsLetter (Current ())) {
                 return ConsumeName ();
             }
 
-            if (Char.IsDigit (Current ())) {
+            if (char.IsDigit (Current ())) {
                 return ConsumeNumber ();
+            }
+
+            if (Current () == '\n') {
+                return new Token (TokenKind.NEWLINE, "NEWLINE");
+            }
+
+            if (char.IsSymbol (Current ())) {
+                return new Token (TokenKind.SYMBOL, "SYMBOL");
+            }
+
+            if (char.IsWhiteSpace (Current ())) {
+                Next ();
             }
 
             return null;
@@ -54,9 +66,9 @@ namespace ParserGenerator {
 
         private Token ConsumeName () {
             StringBuilder _string = new StringBuilder ();
-            _string.Append (Current);
+            _string.Append (Current ());
             Next ();
-            while (Current ().IsLetter ()) {
+            while (char.IsLetter (Current ())) {
                 _string.Append (Current ());
                 Next ();
             }
@@ -68,7 +80,7 @@ namespace ParserGenerator {
             StringBuilder _string = new StringBuilder ();
             _string.Append (Current ());
             Next ();
-            while (Current ().IsDigit ()) {
+            while (char.IsDigit (Current ())) {
                 _string.Append (Current ());
                 Next ();
             }
@@ -77,7 +89,7 @@ namespace ParserGenerator {
         }
 
         private char Current () {
-            return _inputPEG.Substring (_pos, 1);
+            return _inputPEG[_pos];
         }
 
         private void Next () {

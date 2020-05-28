@@ -1,8 +1,8 @@
-using System.Reflection.Emit;
 namespace ParserGenerator {
     public class Parser {
+        private Tokenizer _tokenizer;
         public Parser () {
-            _tokenizer = new GrammarTokenizer ();
+            _tokenizer = new Tokenizer ();
         }
 
         public int Mark () {
@@ -13,12 +13,16 @@ namespace ParserGenerator {
             _tokenizer.Reset (pos);
         }
 
-        public Expect (String argument) {
-            Tokenizer _token = _tokenizer.PeekToken ();
-            if (_token.type == argument || _token.string == argument) {
+        public Token Expect (string argument) {
+            Token _token = _tokenizer.PeekToken ();
+            if (_token.Type.ToString () == argument || _token.String == argument) {
                 return _tokenizer.NextToken ();
             }
-            return None;
+            return null;
+        }
+
+        public Tokenizer GetTokenizer () {
+            return _tokenizer;
         }
     }
 }

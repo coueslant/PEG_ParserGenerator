@@ -1,19 +1,19 @@
 namespace ParserGenerator {
     public class Token {
-        String _type;
-        String _string;
+        TokenKind _type;
+        string _string;
 
-        public String Type {
+        public TokenKind Type {
             get { return _type; }
             set { _type = value; }
         }
 
-        public String @String {
+        public string @String {
             get { return _string; }
             set { _string = value; }
         }
 
-        public Token (String type, String @string) {
+        public Token (TokenKind type, string @string) {
             _type = type;
             _string = @string;
         }
