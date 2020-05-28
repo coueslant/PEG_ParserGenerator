@@ -53,20 +53,32 @@ namespace ParserGenerator
             return _tokenizer;
         }
 
-        public T Memoize<T>(Func<T> f)
+        public Object Memoize<Object>(Func<Object> f)
         {
             return MemoizeWrapper(f);
         }
 
-        public T MemoizeWrapper<T>(Func<T> f)
+        public Object MemoizeWrapper<Object>(Func<Object> f)
         {
-            int pos = Mark();
+            int _pos = Mark();
             Memo _memo;
-            if (!(_memos.TryGetValue(pos, out _memo)))
+            if (!(_memos.TryGetValue(_pos, out _memo)))
             {
-
+                _memos.Add(_pos, new Memo());
             }
-            Tuple<Func<T>, string> _key = Tuple.Create(f, "");
+            Tuple<Func<Object>, string> _key = Tuple.Create(f, "");
+            if (_memo.GetMemo(_key))
+            {
+                Tuple<Object, int> _memoResult = _memo.GetMemo(_key);
+                var _result = _memoResult.Item1;
+                int _endPos = _memoResult.Item2;
+            }
+            else
+            {
+                var _result = f();
+                int _endPos = Mark();
+                _memo.AddMemo(Tuple.Create(f, ""), Tuple.Create(_result, _endPos));
+            }
         }
 
     }
