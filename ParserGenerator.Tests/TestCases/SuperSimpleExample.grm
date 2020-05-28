@@ -1,1 +1,2 @@
-expr: expr '+' term | term
+expr: expr '+' term 
+    | term

@@ -67,7 +67,7 @@ namespace ParserGenerator
             if (char.IsWhiteSpace((char)Current()))
             {
                 Token _token = HandleIndent();
-                if (_token != null)
+                if (_token == null)
                 {
                     _token = new Token(TokenKind.WHITESPACE, ((char)Current()).ToString());
                 }

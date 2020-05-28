@@ -41,7 +41,7 @@ namespace ParserGenerator
         {
             _parsing = "Metas";
             int _pos = Mark();
-            Meta _meta = Meta();
+            Meta _meta = (Meta)Memoize(Meta);
             if (_meta != null)
             {
                 List<Meta> _metas = new List<Meta>();
@@ -80,7 +80,7 @@ namespace ParserGenerator
 
         private List<Rule> Rules()
         {
-            Rule _rule = Rule();
+            Rule _rule = (Rule)Memoize(Rule);
             if (_rule != null)
             {
                 List<Rule> _rules = new List<Rule>();
@@ -154,42 +154,10 @@ namespace ParserGenerator
             System.Console.WriteLine("Failed to parse rule at: [ position: " + GetTokenizer().Mark().ToString() + ", line: " + _lineCount + " ]");
             return null;
         }
-
-        // if (_name != null)
-        // {
-        //     Token _separator = Expect(":");
-        //     if (_separator != null)
-        //     {
-        //         List<string> _alt = Alternative();
-        //         if (_alt != null)
-        //         {
-        //             List<List<string>> _alternatives = new List<List<string>>();
-        //             _alternatives.Add(_alt);
-        //             int _altPos = Mark();
-        //             _separator = Expect("|");
-        //             _alt = Alternative();
-        //             while (_separator != null && _alt != null)
-        //             {
-        //                 _alternatives.Add(_alt);
-        //                 _altPos = Mark();
-        //                 _separator = Expect("|");
-        //                 _alt = Alternative();
-        //             }
-        //             Reset(_altPos);
-        //             Token _newLine = Expect("NEWLINE");
-        //             if (_newLine != null)
-        //             {
-        //                 _lineCount++;
-        //                 return new Rule(_name.String, _alternatives);
-        //             }
-        //         }
-        //     }
-        // }
-
         private List<Alternative> Alternatives()
         {
             _parsing = "Alternatives";
-            Alternative _alternative = Alternative();
+            Alternative _alternative = (Alternative)Memoize(Alternative);
             if (_alternative != null)
             {
                 List<Alternative> _alternatives = new List<Alternative>();
@@ -212,7 +180,7 @@ namespace ParserGenerator
         {
             _parsing = "Alternative";
             List<String> _items = Items();
-            string _action = Action();
+            string _action = (string)Memoize(Action);
             if (_items == null || _action == null)
             {
                 // failed to parse alternative somewhere
@@ -260,7 +228,7 @@ namespace ParserGenerator
         private List<string> Items()
         {
             _parsing = "Items";
-            string _item = Item();
+            string _item = (string)Memoize(Item);
             if (_item != null)
             {
                 List<string> _items = new List<string>();
@@ -329,7 +297,7 @@ namespace ParserGenerator
         {
             _parsing = "ActionContents";
             string _contentsString = "";
-            string _content = Content();
+            string _content = (string)Memoize(Content);
             if (_content.Length != 0)
             {
                 _contentsString = _contentsString + _content;
