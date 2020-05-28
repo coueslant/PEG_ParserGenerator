@@ -4,9 +4,9 @@ namespace ParserGenerator
     public class Rule
     {
         private string _name;
-        private List<List<string>> _alternatives;
+        private List<Alternative> _alternatives;
 
-        public Rule(string name, List<List<string>> alternatives)
+        public Rule(string name, List<Alternative> alternatives)
         {
             _name = name;
             _alternatives = alternatives;
@@ -17,7 +17,7 @@ namespace ParserGenerator
             return _name;
         }
 
-        public List<List<string>> GetAlternatives()
+        public List<Alternative> GetAlternatives()
         {
             return _alternatives;
         }

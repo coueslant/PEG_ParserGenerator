@@ -30,27 +30,48 @@ namespace ParserGenerator
 
             GrammarParser parser = new GrammarParser(grammarString);
 
-            List<Rule> _rules = new List<Rule>();
+            Grammar _grammar = parser.Grammar();
 
-            _rules = parser.Grammar();
-
-            if (_rules != null)
+            if (_grammar != null)
             {
-                foreach (Rule _rule in _rules)
+                PrintParsedGrammar(_grammar);
+            }
+        }
+
+        public static void PrintParsedGrammar(Grammar _grammar)
+        {
+
+            if (_grammar.Metas.Count > 0)
+            {
+                System.Console.WriteLine("METAS");
+                System.Console.WriteLine("+++++");
+                foreach (Meta _meta in _grammar.Metas)
+                {
+                    System.Console.WriteLine("Name: " + _meta.Name);
+                    System.Console.WriteLine("    -> " + _meta.String);
+                }
+                System.Console.WriteLine("+++++");
+                System.Console.WriteLine();
+            }
+            if (_grammar.Rules != null)
+            {
+                System.Console.WriteLine("RULES");
+                System.Console.WriteLine("+++++");
+                foreach (Rule _rule in _grammar.Rules)
                 {
                     System.Console.WriteLine("Name: " + _rule.GetName());
                     System.Console.WriteLine("Alternatives:");
-                    foreach (List<string> _alternative in _rule.GetAlternatives())
+                    foreach (Alternative _alternative in _rule.GetAlternatives())
                     {
-                        System.Console.Write("->\t");
-                        foreach (string _alternativeItem in _alternative)
+                        System.Console.Write("             -> ");
+                        foreach (string _alternativeItem in _alternative.GetItems())
                         {
                             System.Console.Write(_alternativeItem + " ");
                         }
                         System.Console.WriteLine();
                     }
                 }
-
+                System.Console.WriteLine("+++++");
             }
         }
     }
