@@ -99,54 +99,92 @@ namespace ParserGenerator
 
         private Rule Rule()
         {
+            // rule: NAME ":" alts NEWLINE INDENT more_alts DEDENT { Rule(name.string, alts + more_alts) }
+            //       | NAME ":" alts NEWLINE { Rule(name.string, alts) }
+            //       | NAME ":" NEWLINE INDENT more_alts DEDENT { Rule(name.string, more_alts) }
             _parsing = "Rule";
             int _pos = Mark();
             Token _name = Expect("NAME");
             Token _separator = Expect(":");
             List<Alternative> _alternatives = Alternatives();
             Token _newline = Expect("NEWLINE");
+            Token _indent = Expect("INDENT");
+            List<Alternative> _moreAlts = MoreAlternatives();
+            Token _dedent = Expect("NEWLINE");
 
-            if (_name == null || _separator == null || _alternatives == null || _newline == null)
+            if (_name != null && _separator != null && _alternatives != null && _newline != null && _indent != null && _moreAlts != null && _dedent != null)
             {
-                // failed to parse rule somewhere
-                System.Console.WriteLine("Failed to parse rule at: [ position: " + GetTokenizer().Mark().ToString() + ", line: " + _lineCount + " ]");
-                Reset(_pos);
-                return null;
+                System.Console.WriteLine("Successfully parsed rule.");
+                _lineCount++;
+                return new Rule(_name.String, _alternatives);
             }
-            System.Console.WriteLine("Successfully parsed rule.");
-            _lineCount++;
-            return new Rule(_name.String, _alternatives);
-            // if (_name != null)
-            // {
-            //     Token _separator = Expect(":");
-            //     if (_separator != null)
-            //     {
-            //         List<string> _alt = Alternative();
-            //         if (_alt != null)
-            //         {
-            //             List<List<string>> _alternatives = new List<List<string>>();
-            //             _alternatives.Add(_alt);
-            //             int _altPos = Mark();
-            //             _separator = Expect("|");
-            //             _alt = Alternative();
-            //             while (_separator != null && _alt != null)
-            //             {
-            //                 _alternatives.Add(_alt);
-            //                 _altPos = Mark();
-            //                 _separator = Expect("|");
-            //                 _alt = Alternative();
-            //             }
-            //             Reset(_altPos);
-            //             Token _newLine = Expect("NEWLINE");
-            //             if (_newLine != null)
-            //             {
-            //                 _lineCount++;
-            //                 return new Rule(_name.String, _alternatives);
-            //             }
-            //         }
-            //     }
-            // }
+
+            Reset(_pos);
+
+            _name = Expect("NAME");
+            _separator = Expect(":");
+            _alternatives = Alternatives();
+            _newline = Expect("NEWLINE");
+
+            if (_name != null && _separator != null && _alternatives != null && _newline != null)
+            {
+                System.Console.WriteLine("Successfully parsed rule.");
+                _lineCount++;
+                return new Rule(_name.String, _alternatives);
+            }
+
+            Reset(_pos);
+
+            _name = Expect("NAME");
+            _separator = Expect(":");
+            _newline = Expect("NEWLINE");
+            _indent = Expect("INDENT");
+            _moreAlts = MoreAlternatives();
+            _dedent = Expect("NEWLINE");
+
+            if (_name != null && _separator != null && _newline != null && _indent != null && _moreAlts != null && _dedent != null)
+            {
+                System.Console.WriteLine("Successfully parsed rule.");
+                _lineCount++;
+                return new Rule(_name.String, _alternatives);
+            }
+
+
+            // failed to parse rule somewhere
+            System.Console.WriteLine("Failed to parse rule at: [ position: " + GetTokenizer().Mark().ToString() + ", line: " + _lineCount + " ]");
+            return null;
         }
+
+        // if (_name != null)
+        // {
+        //     Token _separator = Expect(":");
+        //     if (_separator != null)
+        //     {
+        //         List<string> _alt = Alternative();
+        //         if (_alt != null)
+        //         {
+        //             List<List<string>> _alternatives = new List<List<string>>();
+        //             _alternatives.Add(_alt);
+        //             int _altPos = Mark();
+        //             _separator = Expect("|");
+        //             _alt = Alternative();
+        //             while (_separator != null && _alt != null)
+        //             {
+        //                 _alternatives.Add(_alt);
+        //                 _altPos = Mark();
+        //                 _separator = Expect("|");
+        //                 _alt = Alternative();
+        //             }
+        //             Reset(_altPos);
+        //             Token _newLine = Expect("NEWLINE");
+        //             if (_newLine != null)
+        //             {
+        //                 _lineCount++;
+        //                 return new Rule(_name.String, _alternatives);
+        //             }
+        //         }
+        //     }
+        // }
 
         private List<Alternative> Alternatives()
         {
@@ -183,6 +221,40 @@ namespace ParserGenerator
             }
             System.Console.WriteLine("Successfully parsed alternative.");
             return new Alternative(_items, _action);
+        }
+
+        public List<Alternative> MoreAlternatives()
+        {
+            // more_alts:"|" alts NEWLINE more_alts { alts + more_alts }
+            //           | "|" alts NEWLINE { alts }
+            // TODO: figure out a fix for the unconditional infinite recursion happening here
+            int _pos = Mark();
+            Token _separator = Expect("|");
+            List<Alternative> _alternatives = Alternatives();
+            Token _newline = Expect("NEWLINE");
+            List<Alternative> _moreAlts = MoreAlternatives();
+
+            if (_separator != null && _alternatives != null && _newline != null && _moreAlts != null)
+            {
+                _alternatives.AddRange(_moreAlts);
+                return _alternatives;
+            }
+
+            Reset(_pos);
+
+
+            _separator = Expect("|");
+            _alternatives = Alternatives();
+            _newline = Expect("NEWLINE");
+
+            if (_separator != null && _alternatives != null && _newline != null)
+            {
+                return _alternatives;
+            }
+
+            // failed to parse more alternatives
+            Reset(_pos);
+            return null;
         }
 
         private List<string> Items()

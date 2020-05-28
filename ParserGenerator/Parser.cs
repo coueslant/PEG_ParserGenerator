@@ -1,8 +1,12 @@
+using System;
+using System.Collections.Generic;
+
 namespace ParserGenerator
 {
     public class Parser
     {
         private Tokenizer _tokenizer;
+        private Dictionary<int, Memo> _memos;
         public string _parsing;
         public int _lineCount;
         public Parser()
@@ -48,5 +52,22 @@ namespace ParserGenerator
         {
             return _tokenizer;
         }
+
+        public T Memoize<T>(Func<T> f)
+        {
+            return MemoizeWrapper(f);
+        }
+
+        public T MemoizeWrapper<T>(Func<T> f)
+        {
+            int pos = Mark();
+            Memo _memo;
+            if (!(_memos.TryGetValue(pos, out _memo)))
+            {
+
+            }
+            Tuple<Func<T>, string> _key = Tuple.Create(f, "");
+        }
+
     }
 }

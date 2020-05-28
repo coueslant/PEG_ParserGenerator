@@ -28,6 +28,7 @@ namespace ParserGenerator
         TILDE,
         CIRCUMFLEX,
         AT,
-        SYMBOL
+        SYMBOL,
+        INDENT
     }
 }

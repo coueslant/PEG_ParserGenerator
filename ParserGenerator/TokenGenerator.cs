@@ -23,7 +23,7 @@ namespace ParserGenerator
             if (_token == null)
             {
                 // raise token exception
-                return _token;
+                return new Token(TokenKind.NULLTOKEN, "");
             }
             return _token;
         }
@@ -66,10 +66,16 @@ namespace ParserGenerator
 
             if (char.IsWhiteSpace((char)Current()))
             {
-                Token _token = new Token(TokenKind.WHITESPACE, ((char)Current()).ToString());
+                Token _token = HandleIndent();
+                if (_token != null)
+                {
+                    _token = new Token(TokenKind.WHITESPACE, ((char)Current()).ToString());
+                }
                 Next();
                 return _token;
             }
+
+
 
             if (Current() == -1) // denotes the end of the file
             {
@@ -200,11 +206,37 @@ namespace ParserGenerator
             }
             if (_kind != TokenKind.NULLTOKEN)
             {
+                // TODO: work out a way to use the above here, instead of just SYMBOL (mainly a problem in action parsing)
                 Token _token = new Token(TokenKind.SYMBOL, ((char)Current()).ToString());
                 Next();
                 return _token;
             }
             // failed to consume a symbol
+            return null;
+        }
+
+        private Token HandleIndent()
+        {
+            int _pos = Mark();
+            if ((char)Current() == ' ')
+            {
+                int _spaceCount = 1;
+                while ((char)Current() == ' ')
+                {
+                    if (_spaceCount == 4)
+                    {
+                        return new Token(TokenKind.INDENT, "    ");
+                    }
+                    Next();
+                }
+            }
+
+            if ((char)Current() == '\t')
+            {
+                return new Token(TokenKind.INDENT, "\t");
+            }
+
+            Reset(_pos);
             return null;
         }
 
@@ -220,6 +252,16 @@ namespace ParserGenerator
         private void Next()
         {
             _pos++;
+        }
+
+        private int Mark()
+        {
+            return _pos;
+        }
+
+        private void Reset(int pos)
+        {
+            _pos = pos;
         }
     }
 }
