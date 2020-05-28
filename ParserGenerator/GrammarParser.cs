@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+
 namespace ParserGenerator
 {
     public class GrammarParser : Parser
@@ -220,7 +222,95 @@ namespace ParserGenerator
 
         private string Action()
         {
-            return "1";
+            _parsing = "Action";
+            int _pos = Mark();
+            Token _leftBrace = Expect("{");
+            string _contents = ActionContents();
+            Token _rightBrace = Expect("}");
+
+            if (_leftBrace == null || _contents.Length != 0 || _rightBrace == null)
+            {
+                // failed to parse action
+                System.Console.WriteLine("Failed to parse action at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+                Reset(_pos);
+                return null;
+            }
+            return _contents;
+        }
+
+        private string ActionContents()
+        {
+            _parsing = "ActionContents";
+            StringBuilder _contentsString = new StringBuilder();
+            string _content = Content();
+            if (_content.Length != 0)
+            {
+                _contentsString.Append(_content);
+                string _furtherContents = ActionContents();
+                if (_furtherContents.Length != 0)
+                {
+                    _contentsString.Append(_furtherContents);
+                }
+                return _content.ToString();
+            }
+            return "";
+        }
+
+        private string Content()
+        {
+            _parsing = "Content";
+            int _pos = Mark();
+
+            Token _leftBrace = Expect("{");
+            if (_leftBrace != null)
+            {
+                string _contents = ActionContents();
+                Token _rightBrace = Expect("}");
+                if (_leftBrace != null && _contents.Length != 0 && _rightBrace != null)
+                {
+                    return "{" + _contents + "}";
+                }
+            }
+
+            Reset(_pos);
+
+            Token _name = Expect("NAME");
+
+            if (_name != null)
+            {
+                return _name.String;
+            }
+
+            Reset(_pos);
+
+            Token _number = Expect("NUMBER");
+
+            if (_number != null)
+            {
+                return _number.String;
+            }
+
+            Reset(_pos);
+
+            Token _string = Expect("STRING");
+
+            if (_string != null)
+            {
+                return _string.String;
+            }
+
+            Reset(_pos);
+
+            Token _symbol = Expect("SYMBOL");
+
+            if (_symbol != null)
+            {
+                return _symbol.String;
+            }
+
+            Reset(_pos);
+
+            return "";
         }
     }
 }
