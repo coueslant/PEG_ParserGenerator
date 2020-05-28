@@ -1,7 +1,5 @@
-/* A basic PEG which recognises mathematical expressions applied to non-negative integers */
-
 Expr : Sum
 Sum : Product (('+' / '-') Product)*
 Product : Power (('*' / '/') Power)*
 Power : Value ('^' Power)?
-Value : [0-9]+ / '(' Expr ')'
+Value : [0-9]+ | '(' Expr ')'

@@ -16,74 +16,82 @@ namespace ParserGenerator
             Token _token = ConsumeToken();
             if (_token == null)
             {
-                return new Token(TokenKind.ENDMARKER, "ENDMARKER");
+                // raise token exception
+                return _token;
             }
             return _token;
         }
 
         private Token ConsumeToken()
         {
-            if (Current() == '"' || Current() == '\'')
+            if ((char)Current() == '"' || (char)Current() == '\'')
             {
                 return ConsumeString();
             }
 
-            if (char.IsLetter(Current()))
+            if (char.IsLetter((char)Current()))
             {
                 return ConsumeName();
             }
 
-            if (char.IsDigit(Current()))
+            if (char.IsDigit((char)Current()))
             {
                 return ConsumeNumber();
             }
 
-            if (Current() == '\n')
+            if ((char)Current() == '\n')
             {
                 Token _token = new Token(TokenKind.NEWLINE, "NEWLINE");
                 Next();
                 return _token;
             }
 
-            if (Current() == ':' || char.IsSymbol(Current()))
+            if ((char)Current() == ':' || (char)Current() == '(' || (char)Current() == ')' || (char)Current() == '&' || (char)Current() == '*' || (char)Current() == '*' || (char)Current() == '+' || (char)Current() == '?' || (char)Current() == '|' || (char)Current() == '[' || (char)Current() == ']' || (char)Current() == '-' || (char)Current() == '/')
             {
-                Token _token = new Token(TokenKind.SYMBOL, Current().ToString());
+                Token _token = new Token(TokenKind.SYMBOL, ((char)Current()).ToString());
                 Next();
                 return _token;
             }
 
-            if (char.IsWhiteSpace(Current()))
+            if (char.IsWhiteSpace((char)Current()))
             {
                 Token _token = new Token(TokenKind.WHITESPACE, "WHITESPACE");
                 Next();
                 return _token;
             }
 
+            if (Current() == -1) // denotes the end of the file
+            {
+                return new Token(TokenKind.ENDMARKER, "ENDMARKER");
+            }
+
+            // failed to consume token
+            System.Console.WriteLine("Failed to consume token at: [ position: " + _pos + " string: " + ((char)Current()).ToString() + " ]");
             return null;
         }
 
         private Token ConsumeString()
         {
             StringBuilder _string = new StringBuilder();
-            _string.Append(Current());
-            char _quoteType = Current();
+            _string.Append((char)Current());
+            char _quoteType = (char)Current();
             Next();
-            while (Current() != _quoteType)
+            while ((char)Current() != _quoteType)
             {
-                if (Current() == '\\')
+                if ((char)Current() == '\\')
                 {
-                    _string.Append(Current());
+                    _string.Append((char)Current());
                     Next();
-                    _string.Append(Current());
+                    _string.Append((char)Current());
                     Next();
                 }
                 else
                 {
-                    _string.Append(Current());
+                    _string.Append((char)Current());
                     Next();
                 }
             }
-            _string.Append(Current());
+            _string.Append((char)Current());
             Next();
             return new Token(TokenKind.STRING, _string.ToString());
         }
@@ -91,11 +99,11 @@ namespace ParserGenerator
         private Token ConsumeName()
         {
             StringBuilder _string = new StringBuilder();
-            _string.Append(Current());
+            _string.Append((char)Current());
             Next();
-            while (char.IsLetter(Current()) || Current() == '_')
+            while (char.IsLetter((char)Current()) || (char)Current() == '_')
             {
-                _string.Append(Current());
+                _string.Append((char)Current());
                 Next();
             }
 
@@ -105,20 +113,24 @@ namespace ParserGenerator
         private Token ConsumeNumber()
         {
             StringBuilder _string = new StringBuilder();
-            _string.Append(Current());
+            _string.Append((char)Current());
             Next();
-            while (char.IsDigit(Current()))
+            while (char.IsDigit((char)Current()))
             {
-                _string.Append(Current());
+                _string.Append((char)Current());
                 Next();
             }
 
             return new Token(TokenKind.NUMBER, _string.ToString());
         }
 
-        private char Current()
+        private int Current()
         {
-            return _inputPEG[_pos];
+            if (_pos < _inputPEG.Length)
+            {
+                return (int)_inputPEG[_pos];
+            }
+            return -1;
         }
 
         private void Next()

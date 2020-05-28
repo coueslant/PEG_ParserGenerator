@@ -27,11 +27,24 @@ namespace ParserGenerator
 
             _rules = parser.Grammar();
 
-            foreach (Rule _rule in _rules)
+            if (_rules != null)
             {
-                System.Console.WriteLine(_rule.ToString());
-            }
+                foreach (Rule _rule in _rules)
+                {
+                    System.Console.WriteLine("Name: " + _rule.GetName());
+                    System.Console.WriteLine("Alternatives:");
+                    foreach (List<string> _alternative in _rule.GetAlternatives())
+                    {
+                        System.Console.Write("->\t");
+                        foreach (string _alternativeItem in _alternative)
+                        {
+                            System.Console.Write(_alternativeItem + " ");
+                        }
+                        System.Console.WriteLine();
+                    }
+                }
 
+            }
         }
     }
 }

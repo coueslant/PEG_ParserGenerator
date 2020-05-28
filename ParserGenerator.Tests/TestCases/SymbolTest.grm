@@ -1,0 +1,2 @@
+Expr : Sum
+Sum : Product (('+' | '-') Product)*

@@ -5,14 +5,15 @@ namespace ParserGenerator
 {
     public class PEGParser : Parser
     {
-
         public PEGParser(string grammarString)
         {
             GetTokenizer().SetTokenGenerator(new PEGTokenGenerator(grammarString));
+            _lineCount = 0;
         }
 
         public List<Rule> Grammar()
         {
+            _parsing = "Grammar";
             int _pos = Mark();
             Rule _rule;
             _rule = Rule();
@@ -27,15 +28,19 @@ namespace ParserGenerator
                 Token _endmarkerToken = Expect("ENDMARKER");
                 if (_endmarkerToken != null)
                 {
+                    System.Console.WriteLine("Successfully parsed grammar.");
                     return _rules;
                 }
             }
             Reset(_pos);
+            // failed to parse grammar
+            System.Console.WriteLine("Failed to parse grammar.");
             return null;
         }
 
         private Rule Rule()
         {
+            _parsing = "Rule";
             int _pos = Mark();
             Token _name = Expect("NAME");
             if (_name != null)
@@ -62,17 +67,21 @@ namespace ParserGenerator
                         Token _newLine = Expect("NEWLINE");
                         if (_newLine != null)
                         {
+                            _lineCount++;
                             return new Rule(_name.String, _alternatives);
                         }
                     }
                 }
             }
             Reset(_pos);
+            // failed to parse rule
+            System.Console.WriteLine("Failed to parse rule at: [ position: " + GetTokenizer().Mark().ToString() + ", line: " + _lineCount + " ]");
             return null;
         }
 
         private List<string> Alternative()
         {
+            _parsing = "Alternative";
             string _item = Item();
             if (_item != null)
             {
@@ -86,17 +95,14 @@ namespace ParserGenerator
                 }
                 return _items;
             }
+            // failed to parse alternative
+            System.Console.WriteLine("Failed to parse alternative at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
             return null;
         }
 
         private string Item()
         {
-            Token _token = Expect("WHITESPACE");
-            while (_token != null)
-            {
-                _token = Expect("WHITESPACE");
-            }
-
+            _parsing = "Item";
             Token _name = Expect("NAME");
             if (_name != null)
             {
@@ -109,12 +115,19 @@ namespace ParserGenerator
                 return _string.String;
             }
 
+            Token _number = Expect("NUMBER");
+            if (_number != null)
+            {
+                return _number.String;
+            }
+
             Token _symbol = Expect("SYMBOL");
             if (_symbol != null)
             {
                 return _symbol.String;
             }
-
+            // failed to parse item
+            System.Console.WriteLine("Failed to parse item at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
             return null;
         }
     }
