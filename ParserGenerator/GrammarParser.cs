@@ -7,7 +7,7 @@ namespace ParserGenerator
 {
     public class GrammarParser : Parser
     {
-        public GrammarParser(string grammarString)
+        public GrammarParser(string grammarString) : base()
         {
             Tokenizer.SetTokenGenerator(new TokenGenerator(grammarString));
             _lineCount = 0;

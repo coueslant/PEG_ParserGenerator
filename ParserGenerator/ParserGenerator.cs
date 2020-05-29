@@ -13,13 +13,6 @@ namespace ParserGenerator
             if (args.Length == 1)
             {
                 Parse(args[0]);
-                // Tokenizer _tokenizer = new Tokenizer();
-                // _tokenizer.SetTokenGenerator(new TokenGenerator(System.IO.File.ReadAllText(args[0])));
-
-                // foreach (Token _token in _tokenizer.Tokenize())
-                // {
-                //     System.Console.WriteLine(_token.Type.ToString() + " : " + _token.String);
-                // }
             }
             else
             {
@@ -84,97 +77,91 @@ namespace ParserGenerator
 
         public static void GenerateParser(Grammar grammar)
         {
-            StringBuilder _parserCodeString = new StringBuilder();
+            CodeGenerator.GenerateParserCode(grammar);
+            //     StringBuilder _parserCodeString = new StringBuilder();
 
-            _parserCodeString.AppendLine("/*");
-            _parserCodeString.AppendLine("This is @generated code, do not modify!");
-            _parserCodeString.AppendLine("*/");
+            //     _parserCodeString.AppendLine("/*");
+            //     _parserCodeString.AppendLine("This is @generated code, do not modify!");
+            //     _parserCodeString.AppendLine("*/");
 
+            //     _parserCodeString.AppendLine("using System;");
 
-            _parserCodeString.AppendLine("namespace Parser {");
-            _parserCodeString.AppendLine();
-            _parserCodeString.AppendLine("class GrammarParser : Parser {");
-            foreach (Rule _rule in grammar.Rules)
-            {
-                _parserCodeString.AppendLine($"public void {_rule.Name}() {{");
-                _parserCodeString.AppendLine("int _pos = Mark();");
-                List<string> _vars = new List<string>();
-                foreach (Alternative _alt in _rule.Alternatives)
-                {
-                    List<string> _items = new List<string>();
-                    foreach (string _item in _alt.Items)
-                    {
-                        bool _isString = _item.ToLower()[0] == '"' || _item.ToLower()[0] == '\'';
-                        string _var = "_" + _item.ToLower();
-                        if (_isString)
-                        {
-                            _var = "_string";
-                        }
+            //     _parserCodeString.AppendLine("namespace Parser {");
+            //     _parserCodeString.AppendLine();
+            //     _parserCodeString.AppendLine("class GeneratedParser : Parser {");
 
-                        if (_items.Contains(_var) || _vars.Contains(_var))
-                        {
-                            _var = _var + _items.Count.ToString();
-                        }
+            //     _parserCodeString.AppendLine("public GeneratedParser(string parsingInput) : base() {");
+            //     _parserCodeString.AppendLine("Tokenizer.SetTokenGenerator(new TokenGenerator(parsingInput));");
+            //     _parserCodeString.AppendLine("}");
 
-                        _items.Add(_var);
-                        _vars.Add(_var);
-                        _parserCodeString.Append($"Object {_var} = ");
+            //     foreach (Rule _rule in grammar.Rules)
+            //     {
+            //         _parserCodeString.AppendLine($"public Object {_rule.Name}() {{");
+            //         _parserCodeString.AppendLine("int _pos = Mark();");
+            //         List<string> _vars = new List<string>();
+            //         foreach (Alternative _alt in _rule.Alternatives)
+            //         {
+            //             List<string> _items = new List<string>();
+            //             foreach (string _item in _alt.Items)
+            //             {
+            //                 bool _isString = _item.ToLower()[0] == '"' || _item.ToLower()[0] == '\'';
+            //                 string _var = "_" + _item.ToLower();
+            //                 if (_isString)
+            //                 {
+            //                     _var = "_string";
+            //                 }
 
-                        if (_item[0] == '"' || _item[0] == '\'')
-                        {
-                            _parserCodeString.AppendLine($"Expect({_item.ToString()});");
-                        }
-                        else if (_item.Equals(_item.ToUpper()))
-                        {
-                            _parserCodeString.AppendLine($"Expect({_item});");
-                        }
-                        else
-                        {
-                            _parserCodeString.AppendLine($"Memoize({_item});");
-                        }
+            //                 if (_items.Contains(_var) || _vars.Contains(_var))
+            //                 {
+            //                     _var = _var + _vars.Count.ToString();
+            //                 }
 
+            //                 _items.Add(_var);
+            //                 _vars.Add(_var);
+            //                 _parserCodeString.Append($"Object {_var} = ");
 
-                        // Token _name = Expect("NAME");
-                        // if (_name != null)
-                        // {
-                        //     System.Console.WriteLine("Successfully parsed item.");
-                        //     return _name.String;
-                        // }
+            //                 if (_isString)
+            //                 {
+            //                     _parserCodeString.AppendLine($"Expect({_item.ToString()});");
+            //                 }
+            //                 else if (_item.Equals(_item.ToUpper()))
+            //                 {
+            //                     _parserCodeString.AppendLine($"Expect(\"{_item}\");");
+            //                 }
+            //                 else
+            //                 {
+            //                     _parserCodeString.AppendLine($"Memoize({_item});");
+            //                 }
+            //             }
 
-                        //         _parserCodeString.AppendLine($"Object _{_var} = Expect({_item});");
-                        //         _parserCodeString.AppendLine($"if (_{_var} != null) {{");
-                        //     }
-                        // } else {
+            //             _parserCodeString.Append("if(");
+            //             foreach (string var in _items)
+            //             {
+            //                 if (var != _items[_items.Count - 1])
+            //                 {
+            //                     _parserCodeString.Append($"{var} != null || ");
 
-                        // }
-                    }
+            //                 }
+            //                 else
+            //                 {
+            //                     _parserCodeString.Append($"{var} != null");
+            //                 }
+            //             }
+            //             _parserCodeString.AppendLine(") {");
+            //             // node returning code here
+            //             _parserCodeString.Append($"Console.WriteLine(\"Recognized [ {_rule.Name} ]\")");
+            //             _parserCodeString.Append("return true;");
+            //             _parserCodeString.AppendLine("}");
+            //         }
+            //         _parserCodeString.AppendLine($"Reset(_pos);");
+            //         _parserCodeString.AppendLine("return null;");
+            //         _parserCodeString.AppendLine("}");
+            //     }
+            //     _parserCodeString.AppendLine("}");
+            //     _parserCodeString.AppendLine("}");
 
-                    _parserCodeString.Append("if(");
-                    foreach (string var in _items)
-                    {
-                        if (var != _items[_items.Count - 1])
-                        {
-                            _parserCodeString.Append($"{var} != null || ");
-
-                        }
-                        else
-                        {
-                            _parserCodeString.Append($"{var} != null");
-                        }
-                    }
-                    _parserCodeString.AppendLine(") {");
-                    // node returning code here
-                    _parserCodeString.AppendLine("}");
-                }
-                _parserCodeString.AppendLine($"Reset(_pos);");
-                _parserCodeString.AppendLine("return null;");
-                _parserCodeString.AppendLine("}");
-            }
-            _parserCodeString.AppendLine("}");
-            _parserCodeString.AppendLine("}");
-
-            File.Delete(@".\GeneratedParsers\Parser.cs");
-            File.WriteAllText(@".\GeneratedParsers\Parser.cs", _parserCodeString.ToString());
+            //     File.Delete(@".\GeneratedParsers\GeneratedParser.cs");
+            //     File.WriteAllText(@".\GeneratedParsers\GeneratedParser.cs", _parserCodeString.ToString());
+            // }
         }
     }
-}
