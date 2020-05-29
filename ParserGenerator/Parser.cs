@@ -19,7 +19,6 @@ namespace ParserGenerator
         public int Mark()
         {
             int _pos = Tokenizer.Mark();
-            System.Console.WriteLine("Marking pre-parse position at position [ " + _pos + " ]");
             return _pos;
         }
 
@@ -33,7 +32,7 @@ namespace ParserGenerator
         {
             Token _token = Tokenizer.PeekToken();
 
-            while (_token.Type.ToString() == "WHITESPACE" || string.IsNullOrWhiteSpace(_token.String))
+            while (_token.Type.ToString() != argument && (_token.Type.ToString() == "WHITESPACE" || string.IsNullOrWhiteSpace(_token.String)))
             {
                 _token = Tokenizer.PeekToken();
                 if (_token.Type.ToString() == "WHITESPACE" || string.IsNullOrWhiteSpace(_token.String))

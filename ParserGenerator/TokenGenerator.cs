@@ -30,46 +30,47 @@ namespace ParserGenerator
 
         private Token ConsumeToken()
         {
-            if ((char)Current() == '"' || (char)Current() == '\'')
+            char _testChar = (char)Current();
+            if (_testChar == '"' || _testChar == '\'')
             {
                 return ConsumeString();
             }
 
-            if (char.IsLetter((char)Current()))
+            if (char.IsLetter(_testChar))
             {
                 return ConsumeName();
             }
 
-            if (char.IsDigit((char)Current()))
+            if (char.IsDigit(_testChar))
             {
                 return ConsumeNumber();
             }
 
-            if ((char)Current() == '\n')
+            if (_testChar == '\n')
             {
                 Token _token = new Token(TokenKind.NEWLINE, "NEWLINE");
                 Next();
                 return _token;
             }
 
-            if (_symbolSet.Contains((char)Current()))
+            if (_symbolSet.Contains(_testChar))
             {
                 return ConsumeSymbol();
             }
 
-            if (_OPSet.Contains((char)Current()))
+            if (_OPSet.Contains(_testChar))
             {
-                Token _token = new Token(TokenKind.OP, ((char)Current()).ToString());
+                Token _token = new Token(TokenKind.OP, (_testChar).ToString());
                 Next();
                 return _token;
             }
 
-            if (char.IsWhiteSpace((char)Current()))
+            if (char.IsWhiteSpace(_testChar))
             {
                 Token _token = HandleIndent();
                 if (_token == null)
                 {
-                    _token = new Token(TokenKind.WHITESPACE, ((char)Current()).ToString());
+                    _token = new Token(TokenKind.WHITESPACE, (_testChar).ToString());
                 }
                 Next();
                 return _token;
@@ -83,7 +84,7 @@ namespace ParserGenerator
             }
 
             // failed to consume token
-            System.Console.WriteLine("Failed to consume token at: [ position: " + _pos + " string: " + ((char)Current()).ToString() + " ]");
+            System.Console.WriteLine("Failed to consume token [ " + (_testChar).ToString() + " ] at position [ " + _pos + " ]");
             return null;
         }
 
@@ -220,10 +221,9 @@ namespace ParserGenerator
             int _pos = Mark();
             if ((char)Current() == ' ')
             {
-                int _spaceCount = 1;
                 while ((char)Current() == ' ')
                 {
-                    if (_spaceCount == 4)
+                    if ((Mark() - _pos) == 3) // could be 3 or 4 needs testing
                     {
                         return new Token(TokenKind.INDENT, "    ");
                     }

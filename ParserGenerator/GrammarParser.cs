@@ -95,7 +95,7 @@ namespace ParserGenerator
                 return _rules;
             }
             System.Console.WriteLine("Failed to parse rules at: [ position: " + _pos.ToString() + " ]");
-            Reset(_pos);
+            // Reset(_pos);
             return null;
         }
 
@@ -206,7 +206,15 @@ namespace ParserGenerator
             Token _separator = Expect("|");
             List<Alternative> _alternatives = (List<Alternative>)Memoize(Alternatives);
             Token _newline = Expect("NEWLINE");
-            List<Alternative> _moreAlts = (List<Alternative>)Memoize(MoreAlternatives);
+            List<Alternative> _moreAlts;
+            if (_newline != null)
+            {
+                _moreAlts = (List<Alternative>)Memoize(MoreAlternatives);
+            }
+            else
+            {
+                _moreAlts = null;
+            }
 
             if (_separator != null && _alternatives != null && _newline != null && _moreAlts != null)
             {
