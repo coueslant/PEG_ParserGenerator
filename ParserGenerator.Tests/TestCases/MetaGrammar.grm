@@ -1,7 +1,0 @@
-start: rules ENDMARKER
-rules: rule rules | rule
-rule: NAME ":" alts NEWLINE
-alts: alt "|" alts | alt
-alt: items
-items: item items | item
-item: NAME | STRING
