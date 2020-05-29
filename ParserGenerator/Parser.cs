@@ -9,6 +9,7 @@ namespace ParserGenerator
         private Dictionary<int, Memo> _memos;
         public string _parsing;
         public int _lineCount;
+        public Tokenizer Tokenizer { get { return _tokenizer; } }
         public Parser()
         {
             _tokenizer = new Tokenizer();
@@ -47,11 +48,6 @@ namespace ParserGenerator
             // did not see expected token
             System.Console.WriteLine("Expected [ " + argument + " ] but saw [ type: " + _token.Type.ToString() + " string: " + _token.String + " ] while parsing [ " + _parsing + " ]");
             return null;
-        }
-
-        public Tokenizer GetTokenizer()
-        {
-            return _tokenizer;
         }
 
         public Object Memoize(Func<Object> f)

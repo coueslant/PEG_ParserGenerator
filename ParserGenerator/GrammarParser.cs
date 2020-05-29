@@ -9,7 +9,7 @@ namespace ParserGenerator
     {
         public GrammarParser(string grammarString)
         {
-            GetTokenizer().SetTokenGenerator(new TokenGenerator(grammarString));
+            Tokenizer.SetTokenGenerator(new TokenGenerator(grammarString));
             _lineCount = 0;
         }
 
@@ -54,7 +54,7 @@ namespace ParserGenerator
                 System.Console.WriteLine("Successfully parsed metas.");
                 return _metas;
             }
-            System.Console.WriteLine("Failed to parse metas at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+            System.Console.WriteLine("Failed to parse metas at: [ position: " + _pos.ToString() + " ]");
             Reset(_pos);
             return null;
         }
@@ -70,7 +70,7 @@ namespace ParserGenerator
             if (_at == null || _name == null || _string == null || _newline == null)
             {
                 // failed to parse a meta
-                System.Console.WriteLine("Failed to parse meta at: [ position: " + GetTokenizer().Mark().ToString() + ", line: " + _lineCount + " ]");
+                System.Console.WriteLine("Failed to parse meta at: [ position: " + _pos.ToString() + ", line: " + _lineCount + " ]");
                 Reset(_pos);
                 return null;
             }
@@ -80,6 +80,7 @@ namespace ParserGenerator
 
         private List<Rule> Rules()
         {
+            int _pos = Mark();
             Rule _rule = (Rule)Memoize(Rule);
             if (_rule != null)
             {
@@ -93,7 +94,8 @@ namespace ParserGenerator
                 System.Console.WriteLine("Successfully parsed rules.");
                 return _rules;
             }
-            System.Console.WriteLine("Failed to parse rules at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+            System.Console.WriteLine("Failed to parse rules at: [ position: " + _pos.ToString() + " ]");
+            Reset(_pos);
             return null;
         }
 
@@ -151,12 +153,13 @@ namespace ParserGenerator
 
 
             // failed to parse rule somewhere
-            System.Console.WriteLine("Failed to parse rule at: [ position: " + GetTokenizer().Mark().ToString() + ", line: " + _lineCount + " ]");
+            System.Console.WriteLine("Failed to parse rule at: [ position: " + _pos.ToString() + ", line: " + _lineCount + " ]");
             return null;
         }
         private List<Alternative> Alternatives()
         {
             _parsing = "Alternatives";
+            int _pos = Mark();
             Alternative _alternative = (Alternative)Memoize(Alternative);
             if (_alternative != null)
             {
@@ -172,19 +175,22 @@ namespace ParserGenerator
                 return _alternatives;
             }
             // failed to parse any alternatives
-            System.Console.WriteLine("Failed to parse alternatives at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+            System.Console.WriteLine("Failed to parse alternatives at: [ position: " + _pos.ToString() + " ]");
+            Reset(_pos);
             return null;
         }
 
         private Alternative Alternative()
         {
             _parsing = "Alternative";
+            int _pos = Mark();
             List<String> _items = Items();
             string _action = (string)Memoize(Action);
             if (_items == null || _action == null)
             {
                 // failed to parse alternative somewhere
-                System.Console.WriteLine("Failed to parse alternative at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+                System.Console.WriteLine("Failed to parse alternative at: [ position: " + _pos.ToString() + " ]");
+                Reset(_pos);
                 return null;
             }
             System.Console.WriteLine("Successfully parsed alternative.");
@@ -221,6 +227,7 @@ namespace ParserGenerator
             }
 
             // failed to parse more alternatives
+            System.Console.WriteLine("Failed to parse more alternatives at: [ position: " + _pos.ToString() + " ]");
             Reset(_pos);
             return null;
         }
@@ -228,6 +235,7 @@ namespace ParserGenerator
         private List<string> Items()
         {
             _parsing = "Items";
+            int _pos = Mark();
             string _item = (string)Memoize(Item);
             if (_item != null)
             {
@@ -244,13 +252,15 @@ namespace ParserGenerator
                 return _items;
             }
             // didn't see any new item, return an indicator of that
-            System.Console.WriteLine("Failed to parse items at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+            System.Console.WriteLine("Failed to parse items at: [ position: " + _pos.ToString() + " ]");
+            Reset(_pos);
             return null;
         }
 
         private string Item()
         {
             _parsing = "Item";
+            int _pos = Mark();
             Token _name = Expect("NAME");
             if (_name != null)
             {
@@ -266,7 +276,8 @@ namespace ParserGenerator
             }
 
             // failed to parse item
-            System.Console.WriteLine("Failed to parse item at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+            System.Console.WriteLine("Failed to parse item at: [ position: " + _pos.ToString() + " ]");
+            Reset(_pos);
             return null;
         }
 
@@ -282,7 +293,7 @@ namespace ParserGenerator
                 if (_leftBrace == null || _contents.Length == 0 || _rightBrace == null)
                 {
                     // failed to parse action
-                    System.Console.WriteLine("Failed to parse action at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+                    System.Console.WriteLine("Failed to parse action at: [ position: " + _pos.ToString() + " ]");
                     Reset(_pos);
                     return "";
                 }
@@ -296,6 +307,7 @@ namespace ParserGenerator
         private string ActionContents()
         {
             _parsing = "ActionContents";
+            int _pos = Mark();
             string _contentsString = "";
             string _content = (string)Memoize(Content);
             if (_content.Length != 0)
@@ -308,14 +320,15 @@ namespace ParserGenerator
                 }
                 return _contentsString;
             }
-            System.Console.WriteLine("Failed to parse action contents at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+            System.Console.WriteLine("Failed to parse action contents at: [ position: " + _pos.ToString() + " ]");
+            Reset(_pos);
             return "";
         }
 
         private string Content()
         {
             _parsing = "Content";
-
+            int _pos = Mark();
             Token _leftBrace = Expect("{");
             if (_leftBrace != null)
             {
@@ -327,6 +340,7 @@ namespace ParserGenerator
                     return "{" + _contents + "}";
                 }
             }
+            Reset(_pos);
 
             Token _name = Expect("NAME");
 
@@ -336,6 +350,8 @@ namespace ParserGenerator
                 return _name.String;
             }
 
+            Reset(_pos);
+
             Token _number = Expect("NUMBER");
 
             if (_number != null)
@@ -343,6 +359,8 @@ namespace ParserGenerator
                 System.Console.WriteLine("Successfully parsed content.");
                 return _number.String;
             }
+
+            Reset(_pos);
 
             Token _string = Expect("STRING");
 
@@ -376,7 +394,7 @@ namespace ParserGenerator
 
             Reset(_opPos);
 
-            System.Console.WriteLine("Failed to parse action contents at: [ position: " + GetTokenizer().Mark().ToString() + " ]");
+            System.Console.WriteLine("Failed to parse action contents at: [ position: " + Tokenizer.Mark().ToString() + " ]");
             return "";
 
         }

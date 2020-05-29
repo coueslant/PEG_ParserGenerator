@@ -2,11 +2,12 @@ using System.Collections.Generic;
 
 namespace ParserGenerator
 {
-    public class OPs
+    public class Ops
     {
         private HashSet<char> _OPs = new HashSet<char>();
+        public HashSet<char> OPs { get { return _OPs; } }
 
-        public OPs()
+        public Ops()
         {
             GenerateOPSet();
         }

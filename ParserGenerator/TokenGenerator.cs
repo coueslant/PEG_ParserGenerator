@@ -14,7 +14,7 @@ namespace ParserGenerator
         {
             _inputPEG = inputPEG;
             _symbolSet = (new Symbols()).GetSymbols();
-            _OPSet = (new OPs()).GetOPs();
+            _OPSet = (new Ops()).OPs;
             _pos = 0;
         }
         public Token NextToken()
