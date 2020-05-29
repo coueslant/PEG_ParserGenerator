@@ -86,6 +86,11 @@ namespace ParserGenerator
         {
             StringBuilder _parserCodeString = new StringBuilder();
 
+            _parserCodeString.AppendLine("/*");
+            _parserCodeString.AppendLine("This is @generated code, do not modify!");
+            _parserCodeString.AppendLine("*/");
+
+
             _parserCodeString.AppendLine("namespace Parser {");
             _parserCodeString.AppendLine();
             _parserCodeString.AppendLine("class GrammarParser : Parser {");
@@ -93,33 +98,78 @@ namespace ParserGenerator
             {
                 _parserCodeString.AppendLine($"public void {_rule.Name}() {{");
                 _parserCodeString.AppendLine("int _pos = Mark();");
+                List<string> _vars = new List<string>();
                 foreach (Alternative _alt in _rule.Alternatives)
                 {
                     List<string> _items = new List<string>();
                     foreach (string _item in _alt.Items)
                     {
+                        bool _isString = _item.ToLower()[0] == '"' || _item.ToLower()[0] == '\'';
+                        string _var = "_" + _item.ToLower();
+                        if (_isString)
+                        {
+                            _var = "_string";
+                        }
+
+                        if (_items.Contains(_var) || _vars.Contains(_var))
+                        {
+                            _var = _var + _items.Count.ToString();
+                        }
+
+                        _items.Add(_var);
+                        _vars.Add(_var);
+                        _parserCodeString.Append($"Object {_var} = ");
+
                         if (_item[0] == '"' || _item[0] == '\'')
                         {
                             _parserCodeString.AppendLine($"Expect({_item.ToString()});");
                         }
+                        else if (_item.Equals(_item.ToUpper()))
+                        {
+                            _parserCodeString.AppendLine($"Expect({_item});");
+                        }
                         else
                         {
-                            string _var = _item.ToLower();
-                            if (_items.Contains(_var))
-                            {
-                                _var = _var + _items.Count.ToString();
-                            }
-                            _items.Add(_var);
-                            if (_item.Equals(_item.ToUpper()))
-                            {
-                                _parserCodeString.AppendLine($"Object _{_var};");
-                            }
+                            _parserCodeString.AppendLine($"Memoize({_item});");
+                        }
+
+
+                        // Token _name = Expect("NAME");
+                        // if (_name != null)
+                        // {
+                        //     System.Console.WriteLine("Successfully parsed item.");
+                        //     return _name.String;
+                        // }
+
+                        //         _parserCodeString.AppendLine($"Object _{_var} = Expect({_item});");
+                        //         _parserCodeString.AppendLine($"if (_{_var} != null) {{");
+                        //     }
+                        // } else {
+
+                        // }
+                    }
+
+                    _parserCodeString.Append("if(");
+                    foreach (string var in _items)
+                    {
+                        if (var != _items[_items.Count - 1])
+                        {
+                            _parserCodeString.Append($"{var} != null || ");
+
+                        }
+                        else
+                        {
+                            _parserCodeString.Append($"{var} != null");
                         }
                     }
+                    _parserCodeString.AppendLine(") {");
+                    // node returning code here
+                    _parserCodeString.AppendLine("}");
                 }
+                _parserCodeString.AppendLine($"Reset(_pos);");
+                _parserCodeString.AppendLine("return null;");
                 _parserCodeString.AppendLine("}");
             }
-
             _parserCodeString.AppendLine("}");
             _parserCodeString.AppendLine("}");
 
