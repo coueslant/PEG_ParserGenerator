@@ -16,7 +16,7 @@ namespace ParserGenerator
             }
             else if (args.Length == 2)
             {
-                TestParser(args[0], args[1]);
+                // TestParser(args[0], args[1]);
             }
             else
             {
@@ -169,10 +169,20 @@ namespace ParserGenerator
             // }
         }
 
-        public static void TestParser(string grammarFilePath, string parsingInput)
-        {
-            GeneratedParser _parser = new GeneratedParser(parsingInput);
-            _parser.Parse();
-        }
+        // public static void TestParser(string grammarFilePath, string parsingInput)
+        // {
+        //     string _parsingInput;
+        //     if (File.Exists(parsingInput))
+        //     {
+        //         _parsingInput = File.ReadAllText(parsingInput);
+        //     }
+        //     else
+        //     {
+        //         _parsingInput = parsingInput;
+        //     }
+
+        //     GeneratedParser _parser = new GeneratedParser(_parsingInput);
+        //     _parser.Parse();
+        // }
     }
 }

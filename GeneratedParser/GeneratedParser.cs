@@ -13,111 +13,239 @@ namespace ParserGenerator
         }
         public Object Parse()
         {
-            return Expr();
+            return start();
         }
-        public Object Expr()
+        public Object start()
         {
             int _pos = Mark();
-            Object _sum = Memoize(Sum);
-            if (_sum != null)
+            Object _metas = Memoize(metas);
+            Object _rules = Memoize(rules);
+            Object _endmarker = Expect("ENDMARKER");
+            if (_metas != null && _rules != null && _endmarker != null)
             {
-                Console.WriteLine("Recognized [ Expr ]");
+                Console.WriteLine("Recognized [ start ]");
+                return true;
+            }
+            Object _rules3 = Memoize(rules);
+            Object _endmarker4 = Expect("ENDMARKER");
+            if (_rules3 != null && _endmarker4 != null)
+            {
+                Console.WriteLine("Recognized [ start ]");
                 return true;
             }
             Reset(_pos);
             return null;
         }
-        public Object Sum()
+        public Object metas()
         {
             int _pos = Mark();
-            Object _product = Memoize(Product);
-            Object _string = Expect("+");
-            Object _product2 = Memoize(Product);
-            if (_product != null || _string != null || _product2 != null)
+            Object _meta = Memoize(meta);
+            Object _metas = Memoize(metas);
+            if (_meta != null && _metas != null)
             {
-                Console.WriteLine("Recognized [ Sum ]");
+                Console.WriteLine("Recognized [ metas ]");
                 return true;
             }
-            Object _product3 = Memoize(Product);
-            Object _string4 = Expect("-");
-            Object _product5 = Memoize(Product);
-            if (_product3 != null || _string4 != null || _product5 != null)
+            Object _meta2 = Memoize(meta);
+            if (_meta2 != null)
             {
-                Console.WriteLine("Recognized [ Sum ]");
-                return true;
-            }
-            Object _product6 = Memoize(Product);
-            if (_product6 != null)
-            {
-                Console.WriteLine("Recognized [ Sum ]");
+                Console.WriteLine("Recognized [ metas ]");
                 return true;
             }
             Reset(_pos);
             return null;
         }
-        public Object Product()
+        public Object meta()
         {
             int _pos = Mark();
-            Object _power = Memoize(Power);
-            Object _string = Expect("*");
-            Object _power2 = Memoize(Power);
-            if (_power != null || _string != null || _power2 != null)
+            Object _string = Expect("@");
+            Object _name = Expect("NAME");
+            Object _string2 = Expect("STRING");
+            Object _newline = Expect("NEWLINE");
+            if (_string != null && _name != null && _string2 != null && _newline != null)
             {
-                Console.WriteLine("Recognized [ Product ]");
-                return true;
-            }
-            Object _power3 = Memoize(Power);
-            Object _string4 = Expect("/");
-            Object _power5 = Memoize(Power);
-            if (_power3 != null || _string4 != null || _power5 != null)
-            {
-                Console.WriteLine("Recognized [ Product ]");
-                return true;
-            }
-            Object _power6 = Memoize(Power);
-            if (_power6 != null)
-            {
-                Console.WriteLine("Recognized [ Product ]");
+                Console.WriteLine("Recognized [ meta ]");
                 return true;
             }
             Reset(_pos);
             return null;
         }
-        public Object Power()
+        public Object rules()
         {
             int _pos = Mark();
-            Object _value = Memoize(Value);
-            Object _string = Expect("^");
-            Object _power = Memoize(Power);
-            if (_value != null || _string != null || _power != null)
+            Object _rule = Memoize(rule);
+            Object _rules = Memoize(rules);
+            if (_rule != null && _rules != null)
             {
-                Console.WriteLine("Recognized [ Power ]");
+                Console.WriteLine("Recognized [ rules ]");
                 return true;
             }
-            Object _value3 = Memoize(Value);
-            if (_value3 != null)
+            Object _rule2 = Memoize(rule);
+            if (_rule2 != null)
             {
-                Console.WriteLine("Recognized [ Power ]");
+                Console.WriteLine("Recognized [ rules ]");
                 return true;
             }
             Reset(_pos);
             return null;
         }
-        public Object Value()
+        public Object rule()
         {
             int _pos = Mark();
+            Object _name = Expect("NAME");
+            Object _string = Expect(":");
+            Object _alts = Memoize(alts);
+            Object _newline = Expect("NEWLINE");
+            if (_name != null && _string != null && _alts != null && _newline != null)
+            {
+                Console.WriteLine("Recognized [ rule ]");
+                return true;
+            }
+            Reset(_pos);
+            return null;
+        }
+        public Object alts()
+        {
+            int _pos = Mark();
+            Object _alt = Memoize(alt);
+            Object _string = Expect("|");
+            Object _alts = Memoize(alts);
+            if (_alt != null && _string != null && _alts != null)
+            {
+                Console.WriteLine("Recognized [ alts ]");
+                return true;
+            }
+            Object _alt3 = Memoize(alt);
+            if (_alt3 != null)
+            {
+                Console.WriteLine("Recognized [ alts ]");
+                return true;
+            }
+            Reset(_pos);
+            return null;
+        }
+        public Object alt()
+        {
+            int _pos = Mark();
+            Object _items = Memoize(items);
+            Object _action = Memoize(action);
+            if (_items != null && _action != null)
+            {
+                Console.WriteLine("Recognized [ alt ]");
+                return true;
+            }
+            Object _items2 = Memoize(items);
+            if (_items2 != null)
+            {
+                Console.WriteLine("Recognized [ alt ]");
+                return true;
+            }
+            Reset(_pos);
+            return null;
+        }
+        public Object items()
+        {
+            int _pos = Mark();
+            Object _item = Memoize(item);
+            Object _items = Memoize(items);
+            if (_item != null && _items != null)
+            {
+                Console.WriteLine("Recognized [ items ]");
+                return true;
+            }
+            Object _item2 = Memoize(item);
+            if (_item2 != null)
+            {
+                Console.WriteLine("Recognized [ items ]");
+                return true;
+            }
+            Reset(_pos);
+            return null;
+        }
+        public Object item()
+        {
+            int _pos = Mark();
+            Object _name = Expect("NAME");
+            if (_name != null)
+            {
+                Console.WriteLine("Recognized [ item ]");
+                return true;
+            }
+            Object _string = Expect("STRING");
+            if (_string != null)
+            {
+                Console.WriteLine("Recognized [ item ]");
+                return true;
+            }
+            Reset(_pos);
+            return null;
+        }
+        public Object action()
+        {
+            int _pos = Mark();
+            Object _string = Expect("{");
+            Object _stuffs = Memoize(stuffs);
+            Object _string2 = Expect("}");
+            if (_string != null && _stuffs != null && _string2 != null)
+            {
+                Console.WriteLine("Recognized [ action ]");
+                return true;
+            }
+            Reset(_pos);
+            return null;
+        }
+        public Object stuffs()
+        {
+            int _pos = Mark();
+            Object _stuff = Memoize(stuff);
+            Object _stuffs = Memoize(stuffs);
+            if (_stuff != null && _stuffs != null)
+            {
+                Console.WriteLine("Recognized [ stuffs ]");
+                return true;
+            }
+            Object _stuff2 = Memoize(stuff);
+            if (_stuff2 != null)
+            {
+                Console.WriteLine("Recognized [ stuffs ]");
+                return true;
+            }
+            Reset(_pos);
+            return null;
+        }
+        public Object stuff()
+        {
+            int _pos = Mark();
+            Object _string = Expect("{");
+            Object _stuffs = Memoize(stuffs);
+            Object _string2 = Expect("}");
+            if (_string != null && _stuffs != null && _string2 != null)
+            {
+                Console.WriteLine("Recognized [ stuff ]");
+                return true;
+            }
+            Object _name = Expect("NAME");
+            if (_name != null)
+            {
+                Console.WriteLine("Recognized [ stuff ]");
+                return true;
+            }
             Object _number = Expect("NUMBER");
             if (_number != null)
             {
-                Console.WriteLine("Recognized [ Value ]");
+                Console.WriteLine("Recognized [ stuff ]");
                 return true;
             }
-            Object _string = Expect("(");
-            Object _expr = Memoize(Expr);
-            Object _string3 = Expect(")");
-            if (_string != null || _expr != null || _string3 != null)
+            Object _string5 = Expect("STRING");
+            if (_string5 != null)
             {
-                Console.WriteLine("Recognized [ Value ]");
+                Console.WriteLine("Recognized [ stuff ]");
+                return true;
+            }
+            Object _op = Expect("OP");
+            if (_op != null)
+            {
+                Console.WriteLine("Recognized [ stuff ]");
                 return true;
             }
             Reset(_pos);
