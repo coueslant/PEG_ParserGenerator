@@ -24,6 +24,10 @@ namespace ParserGenerator
             _parserCodeString.AppendLine("Tokenizer.SetTokenGenerator(new TokenGenerator(parsingInput));");
             _parserCodeString.AppendLine("}");
 
+            _parserCodeString.AppendLine("public Object Parse() {");
+            _parserCodeString.AppendLine($"return {grammar.Rules[0].Name}();");
+            _parserCodeString.AppendLine("}");
+
             foreach (Rule _rule in grammar.Rules)
             {
                 _parserCodeString.AppendLine($"public Object {_rule.Name}() {{");
@@ -79,8 +83,8 @@ namespace ParserGenerator
                     }
                     _parserCodeString.AppendLine(") {");
                     // node returning code here
-                    _parserCodeString.Append($"Console.WriteLine(\"Recognized [ {_rule.Name} ]\")");
-                    _parserCodeString.Append("return true;");
+                    _parserCodeString.AppendLine($"Console.WriteLine(\"Recognized [ {_rule.Name} ]\");");
+                    _parserCodeString.AppendLine("return true;");
                     _parserCodeString.AppendLine("}");
                 }
                 _parserCodeString.AppendLine($"Reset(_pos);");
@@ -90,8 +94,8 @@ namespace ParserGenerator
             _parserCodeString.AppendLine("}");
             _parserCodeString.AppendLine("}");
 
-            File.Delete(@".\GeneratedParsers\GeneratedParser.cs");
-            File.WriteAllText(@".\GeneratedParsers\GeneratedParser.cs", _parserCodeString.ToString());
+            File.Delete(@".\GeneratedParser\GeneratedParser.cs");
+            File.WriteAllText(@".\GeneratedParser\GeneratedParser.cs", _parserCodeString.ToString());
         }
     }
 }

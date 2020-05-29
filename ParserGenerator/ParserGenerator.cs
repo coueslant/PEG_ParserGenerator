@@ -14,6 +14,10 @@ namespace ParserGenerator
             {
                 Parse(args[0]);
             }
+            else if (args.Length == 2)
+            {
+                // TestParser(args[0], args[1]);
+            }
             else
             {
                 System.Console.WriteLine("No file provided.");
@@ -164,4 +168,11 @@ namespace ParserGenerator
             //     File.WriteAllText(@".\GeneratedParsers\GeneratedParser.cs", _parserCodeString.ToString());
             // }
         }
+
+        // public static void TestParser(string grammarFilePath, string parsingInput)
+        // {
+        //     GeneratedParser _parser = new GeneratedParser(parsingInput);
+        //     _parser.Parse();
+        // }
     }
+}
