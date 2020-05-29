@@ -18,31 +18,34 @@ namespace ParserGenerator
 
         public int Mark()
         {
-            return _tokenizer.Mark();
+            int _pos = Tokenizer.Mark();
+            System.Console.WriteLine("Marking pre-parse position at position [ " + _pos + " ]");
+            return _pos;
         }
 
         public void Reset(int pos)
         {
-            _tokenizer.Reset(pos);
+            System.Console.WriteLine("Resetting parser to position [ " + pos.ToString() + " ]");
+            Tokenizer.Reset(pos);
         }
 
         public Token Expect(string argument)
         {
-            Token _token = _tokenizer.PeekToken();
+            Token _token = Tokenizer.PeekToken();
 
             while (_token.Type.ToString() == "WHITESPACE" || string.IsNullOrWhiteSpace(_token.String))
             {
-                _token = _tokenizer.PeekToken();
+                _token = Tokenizer.PeekToken();
                 if (_token.Type.ToString() == "WHITESPACE" || string.IsNullOrWhiteSpace(_token.String))
                 {
-                    _token = _tokenizer.NextToken();
+                    _token = Tokenizer.NextToken();
                 }
             }
 
             if (_token.Type.ToString() == argument || _token.String == argument)
             {
                 System.Console.WriteLine("Expected [ " + argument + " ] and saw [ type: " + _token.Type.ToString() + " string: " + _token.String + " ] while parsing [ " + _parsing + " ]");
-                _tokenizer.NextToken();
+                Tokenizer.NextToken();
                 return _token;
             }
             // did not see expected token

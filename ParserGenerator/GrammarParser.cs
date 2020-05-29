@@ -17,10 +17,10 @@ namespace ParserGenerator
         {
             _parsing = "Grammar";
             int _pos = Mark();
-            List<Rule> _rules;
             List<Meta> _metas;
-            _metas = Metas();
-            _rules = Rules();
+            List<Rule> _rules;
+            _metas = (List<Meta>)Memoize(Metas);
+            _rules = (List<Rule>)Memoize(Rules);
             Token _endmarkerToken = Expect("ENDMARKER");
             if (_endmarkerToken != null)
             {
@@ -46,7 +46,7 @@ namespace ParserGenerator
             {
                 List<Meta> _metas = new List<Meta>();
                 _metas.Add(_meta);
-                List<Meta> _newMetas = Metas();
+                List<Meta> _newMetas = (List<Meta>)Memoize(Metas);
                 if (_newMetas != null)
                 {
                     _metas.AddRange(_newMetas);
@@ -86,7 +86,7 @@ namespace ParserGenerator
             {
                 List<Rule> _rules = new List<Rule>();
                 _rules.Add(_rule);
-                List<Rule> _newRules = Rules();
+                List<Rule> _newRules = (List<Rule>)Memoize(Rules);
                 if (_newRules != null)
                 {
                     _rules.AddRange(_newRules);
@@ -108,10 +108,10 @@ namespace ParserGenerator
             int _pos = Mark();
             Token _name = Expect("NAME");
             Token _separator = Expect(":");
-            List<Alternative> _alternatives = Alternatives();
+            List<Alternative> _alternatives = (List<Alternative>)Memoize(Alternatives);
             Token _newline = Expect("NEWLINE");
             Token _indent = Expect("INDENT");
-            List<Alternative> _moreAlts = MoreAlternatives();
+            List<Alternative> _moreAlts = (List<Alternative>)Memoize(MoreAlternatives);
             Token _dedent = Expect("NEWLINE");
 
             if (_name != null && _separator != null && _alternatives != null && _newline != null && _indent != null && _moreAlts != null && _dedent != null)
@@ -125,7 +125,7 @@ namespace ParserGenerator
 
             _name = Expect("NAME");
             _separator = Expect(":");
-            _alternatives = Alternatives();
+            _alternatives = (List<Alternative>)Memoize(Alternatives);
             _newline = Expect("NEWLINE");
 
             if (_name != null && _separator != null && _alternatives != null && _newline != null)
@@ -141,7 +141,7 @@ namespace ParserGenerator
             _separator = Expect(":");
             _newline = Expect("NEWLINE");
             _indent = Expect("INDENT");
-            _moreAlts = MoreAlternatives();
+            _moreAlts = (List<Alternative>)Memoize(MoreAlternatives);
             _dedent = Expect("NEWLINE");
 
             if (_name != null && _separator != null && _newline != null && _indent != null && _moreAlts != null && _dedent != null)
@@ -169,7 +169,7 @@ namespace ParserGenerator
                 if (_separator != null)
                 {
                     // if we see a separator, continue parsing alternatives
-                    _alternatives.AddRange(Alternatives());
+                    _alternatives.AddRange((List<Alternative>)Memoize(Alternatives));
                 }
                 System.Console.WriteLine("Successfully parsed alternatives.");
                 return _alternatives;
@@ -184,7 +184,7 @@ namespace ParserGenerator
         {
             _parsing = "Alternative";
             int _pos = Mark();
-            List<String> _items = Items();
+            List<string> _items = (List<string>)Memoize(Items);
             string _action = (string)Memoize(Action);
             if (_items == null || _action == null)
             {
@@ -204,9 +204,9 @@ namespace ParserGenerator
             // TODO: figure out a fix for the unconditional infinite recursion happening here
             int _pos = Mark();
             Token _separator = Expect("|");
-            List<Alternative> _alternatives = Alternatives();
+            List<Alternative> _alternatives = (List<Alternative>)Memoize(Alternatives);
             Token _newline = Expect("NEWLINE");
-            List<Alternative> _moreAlts = MoreAlternatives();
+            List<Alternative> _moreAlts = (List<Alternative>)Memoize(MoreAlternatives);
 
             if (_separator != null && _alternatives != null && _newline != null && _moreAlts != null)
             {
@@ -218,7 +218,7 @@ namespace ParserGenerator
 
 
             _separator = Expect("|");
-            _alternatives = Alternatives();
+            _alternatives = (List<Alternative>)Memoize(Alternatives);
             _newline = Expect("NEWLINE");
 
             if (_separator != null && _alternatives != null && _newline != null)
@@ -241,7 +241,7 @@ namespace ParserGenerator
             {
                 List<string> _items = new List<string>();
                 _items.Add(_item);
-                List<string> _newItems = Items();
+                List<string> _newItems = (List<string>)Memoize(Items);
                 if (_newItems != null)
                 {
                     // parsed more items, add them to our list
@@ -288,7 +288,7 @@ namespace ParserGenerator
             Token _leftBrace = Expect("{");
             if (_leftBrace != null)
             {
-                string _contents = ActionContents();
+                string _contents = (string)Memoize(ActionContents);
                 Token _rightBrace = Expect("}");
                 if (_leftBrace == null || _contents.Length == 0 || _rightBrace == null)
                 {
@@ -313,7 +313,7 @@ namespace ParserGenerator
             if (_content.Length != 0)
             {
                 _contentsString = _contentsString + _content;
-                string _furtherContents = ActionContents();
+                string _furtherContents = (string)Memoize(ActionContents);
                 if (_furtherContents.Length != 0)
                 {
                     _contentsString = _contentsString + _furtherContents;
@@ -332,7 +332,7 @@ namespace ParserGenerator
             Token _leftBrace = Expect("{");
             if (_leftBrace != null)
             {
-                string _contents = ActionContents();
+                string _contents = (string)Memoize(ActionContents);
                 Token _rightBrace = Expect("}");
                 if (_leftBrace != null && _contents.Length != 0 && _rightBrace != null)
                 {
