@@ -39,6 +39,7 @@ namespace ParserGenerator
             codeStringBuilder.AppendLine("*/");
 
             codeStringBuilder.AppendLine("using System;");
+            codeStringBuilder.AppendLine("using System.Collections.Generic;");
             codeStringBuilder.AppendLine();
 
             codeStringBuilder.AppendLine("namespace ParserGenerator {");
@@ -66,9 +67,6 @@ namespace ParserGenerator
             {
                 List<string> _items = new List<string>();
                 HandleAlternative(codeStringBuilder, rule, _alt, _vars, _items);
-
-                // TODO: figure out where this piece goes as for now it is being duped somewhat by the alternative handler
-
             }
             codeStringBuilder.AppendLine($"Reset(_pos);");
             codeStringBuilder.AppendLine("return null;");
@@ -112,28 +110,17 @@ namespace ParserGenerator
                 {
                     codeStringBuilder.AppendLine($"List<Object> _{_item} = new List<Object>();");
                     codeStringBuilder.AppendLine($"_{_item}.Add({_var});");
-                    codeStringBuilder.AppendLine($"Object _new{_item} = Memoize({_item});");
-                    codeStringBuilder.Append($"if(_new{_item} != null && ");
-                    foreach (string var in items)
-                    {
-                        if (var != items[items.Count - 1])
-                        {
-                            codeStringBuilder.Append($"{var} != null && ");
-
-                        }
-                        else
-                        {
-                            codeStringBuilder.Append($"{var} != null");
-                        }
-                    }
-                    codeStringBuilder.AppendLine(") {{");
+                    codeStringBuilder.AppendLine($"List<Object> _new{_item} = (List<Object>)Memoize({_item});");
+                    codeStringBuilder.Append($"if(_new{_item} != null");
+                    codeStringBuilder.AppendLine(") {");
                     codeStringBuilder.AppendLine($"_{_item}.AddRange(_new{_item});");
-                    codeStringBuilder.AppendLine("}");
                     codeStringBuilder.AppendLine($"Console.WriteLine(\"Recognized [ {rule.Name} ]\");");
                     codeStringBuilder.AppendLine("return true;");
+                    codeStringBuilder.AppendLine("}");
                 }
+                AddComment(codeStringBuilder, $"return _{_item}");
             }
-            codeStringBuilder.AppendLine("}");
+
             codeStringBuilder.AppendLine("}");
         }
 
