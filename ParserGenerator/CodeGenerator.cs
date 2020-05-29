@@ -31,8 +31,15 @@ namespace ParserGenerator
             codeStringBuilder.AppendLine("/*");
             codeStringBuilder.AppendLine("This is @generated code, do not modify!");
             codeStringBuilder.AppendLine("*/");
+            codeStringBuilder.AppendLine();
+
+            codeStringBuilder.AppendLine("/*");
+            codeStringBuilder.AppendLine("Required usings. Eventually this will import pieces from the ParserGenerator");
+            codeStringBuilder.AppendLine("itself and allow the generated parser to exist in it's own namespace.");
+            codeStringBuilder.AppendLine("*/");
 
             codeStringBuilder.AppendLine("using System;");
+            codeStringBuilder.AppendLine();
 
             codeStringBuilder.AppendLine("namespace ParserGenerator {");
             codeStringBuilder.AppendLine();
@@ -58,100 +65,153 @@ namespace ParserGenerator
             foreach (Alternative _alt in rule.Alternatives)
             {
                 List<string> _items = new List<string>();
-                HandleAlternative(codeStringBuilder, _alt, _vars, _items);
+                HandleAlternative(codeStringBuilder, rule, _alt, _vars, _items);
 
-                codeStringBuilder.Append("if(");
-                foreach (string var in _items)
-                {
-                    if (var != _items[_items.Count - 1])
-                    {
-                        codeStringBuilder.Append($"{var} != null && ");
+                // TODO: figure out where this piece goes as for now it is being duped somewhat by the alternative handler
 
-                    }
-                    else
-                    {
-                        codeStringBuilder.Append($"{var} != null");
-                    }
-                }
-                codeStringBuilder.AppendLine(") {");
-                codeStringBuilder.AppendLine($"Console.WriteLine(\"Recognized [ {rule.Name} ]\");");
-                /*
-                    TODO: write node returning code here
-                */
-                codeStringBuilder.AppendLine("return true;");
-                codeStringBuilder.AppendLine("}");
             }
             codeStringBuilder.AppendLine($"Reset(_pos);");
             codeStringBuilder.AppendLine("return null;");
             codeStringBuilder.AppendLine("}");
         }
 
-        private static void HandleAlternative(StringBuilder codeStringBuilder, Alternative alt, List<string> vars, List<string> items)
+        private static void HandleAlternative(StringBuilder codeStringBuilder, Rule rule, Alternative alt, List<string> vars, List<string> items)
         {
             // TODO: to solve the infinite recursion problem i am seeing i need to come up with
             // TODO: a general version of the code seen in GrammarParser:Metas() or GrammarParser:Rules() 
             // TODO: and also determine when to apply that form vs. the form i already have.
 
-            /*
-            private List<Rule> Rules()
+            // detect a right recursive alternative
+            if (alt.Items[alt.Items.Count - 1] == rule.Name)
             {
-                int _pos = Mark();
-                Rule _rule = (Rule)Memoize(Rule);
-                if (_rule != null)
-                {
-                    List<Rule> _rules = new List<Rule>();
-                    _rules.Add(_rule);
-                    List<Rule> _newRules = (List<Rule>)Memoize(Rules);
-                    if (_newRules != null)
-                    {
-                        _rules.AddRange(_newRules);
-                    }
-                    System.Console.WriteLine("Successfully parsed rules.");
-                    return _rules;
-                }
-                System.Console.WriteLine("Failed to parse rules at: [ position: " + _pos.ToString() + " ]");
-                return null;
+                HandleRightRecursiveAlternative(codeStringBuilder, rule, alt, items, vars);
             }
-            */
-
-
-            foreach (string _item in alt.Items)
+            else
             {
-                bool _isString = _item.ToLower()[0] == '"' || _item.ToLower()[0] == '\'';
-                string _var = "_" + _item.ToLower();
-                if (_isString)
-                {
-                    _var = "_string";
-                }
+                HandleStandardAlternative(codeStringBuilder, rule, alt, items, vars);
+            }
+        }
 
-                if (items.Contains(_var) || vars.Contains(_var))
-                {
-                    _var = _var + vars.Count.ToString();
-                }
+        private static void HandleRightRecursiveAlternative(StringBuilder codeStringBuilder, Rule rule, Alternative alt, List<string> items, List<string> vars)
+        {
+            System.Console.WriteLine("Right recursive rule alternative detected.");
 
-                items.Add(_var);
-                vars.Add(_var);
-                codeStringBuilder.Append($"Object {_var} = ");
+            string _var = CreateVar(codeStringBuilder, alt.Items[0], items, vars);
 
-                if (_isString)
+            codeStringBuilder.Append("if(");
+            codeStringBuilder.Append($"{_var} != null");
+            codeStringBuilder.AppendLine(") {");
+            // further condition matching here
+            foreach (string _item in alt.Items.GetRange(1, alt.Items.Count - 1))
+            {
+                if (_item != alt.Items[alt.Items.Count - 1])
                 {
-                    codeStringBuilder.AppendLine($"Expect({_item.ToString().Replace('\'', '"')});");
-                }
-                else if (_item.Equals(_item.ToUpper()))
-                {
-                    codeStringBuilder.AppendLine($"Expect(\"{_item}\");");
+                    CreateVar(codeStringBuilder, _item, items, vars);
                 }
                 else
                 {
-                    codeStringBuilder.AppendLine($"Memoize({_item});");
+                    codeStringBuilder.AppendLine($"List<Object> _{_item} = new List<Object>();");
+                    codeStringBuilder.AppendLine($"_{_item}.Add({_var});");
+                    codeStringBuilder.AppendLine($"Object _new{_item} = Memoize({_item});");
+                    codeStringBuilder.Append($"if(_new{_item} != null && ");
+                    foreach (string var in items)
+                    {
+                        if (var != items[items.Count - 1])
+                        {
+                            codeStringBuilder.Append($"{var} != null && ");
+
+                        }
+                        else
+                        {
+                            codeStringBuilder.Append($"{var} != null");
+                        }
+                    }
+                    codeStringBuilder.AppendLine(") {{");
+                    codeStringBuilder.AppendLine($"_{_item}.AddRange(_new{_item});");
+                    codeStringBuilder.AppendLine("}");
+                    codeStringBuilder.AppendLine($"Console.WriteLine(\"Recognized [ {rule.Name} ]\");");
+                    codeStringBuilder.AppendLine("return true;");
                 }
             }
+            codeStringBuilder.AppendLine("}");
+            codeStringBuilder.AppendLine("}");
+        }
+
+        private static void HandleStandardAlternative(StringBuilder codeStringBuilder, Rule rule, Alternative alt, List<string> items, List<string> vars)
+        {
+            foreach (string _item in alt.Items)
+            {
+                CreateVar(codeStringBuilder, _item, items, vars);
+            }
+            codeStringBuilder.Append("if(");
+            foreach (string var in items)
+            {
+                if (var != items[items.Count - 1])
+                {
+                    codeStringBuilder.Append($"{var} != null && ");
+
+                }
+                else
+                {
+                    codeStringBuilder.Append($"{var} != null");
+                }
+            }
+            codeStringBuilder.AppendLine(") {");
+            codeStringBuilder.AppendLine($"Console.WriteLine(\"Recognized [ {rule.Name} ]\");");
+            /*
+                TODO: write node returning code here
+            */
+            codeStringBuilder.AppendLine("return true;");
+            codeStringBuilder.AppendLine("}");
         }
 
         private static void AddEnd(StringBuilder codeStringBuilder)
         {
             codeStringBuilder.AppendLine("}");
             codeStringBuilder.AppendLine("}");
+        }
+
+        private static void AddComment(StringBuilder codeStringBuilder, string commentString)
+        {
+            codeStringBuilder.AppendLine("/*");
+            codeStringBuilder.AppendLine(commentString);
+            codeStringBuilder.AppendLine("*/");
+        }
+
+        private static string CreateVar(StringBuilder codeStringBuilder, string varName, List<string> items, List<string> vars)
+        {
+            bool _isString = varName.ToLower()[0] == '"' || varName.ToLower()[0] == '\'';
+            string _var = "_" + varName.ToLower();
+
+            if (_isString)
+            {
+                _var = "_stringItem";
+            }
+
+            if (vars.Contains(_var))
+            {
+                _var = _var + items.Count;
+            }
+
+            codeStringBuilder.Append($"Object {_var} = ");
+
+            if (_isString)
+            {
+                codeStringBuilder.AppendLine($"Expect({varName.ToString().Replace('\'', '"')});");
+            }
+            else if (varName.Equals(varName.ToUpper()))
+            {
+                codeStringBuilder.AppendLine($"Expect(\"{varName}\");");
+            }
+            else
+            {
+                codeStringBuilder.AppendLine($"Memoize({varName});");
+            }
+
+            items.Add(_var);
+            vars.Add(_var);
+
+            return _var;
         }
 
         private static void WriteParserFile(string parserFilePath, StringBuilder codeStringBuilder)
