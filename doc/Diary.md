@@ -12,3 +12,7 @@ There are many interesting areas I could go with this project, and it encompasse
 **Entry:** This morning's work consisted of figuring out an infinite recursion bug in the generated code, along with some cleanup of the code generator.
 
 The infinite recursion problem is interesting. In my handrolled pattern for the grammar parser I have a mechanism in place which prevents falling into infinite recursion when a right recursive alternate matches, but I haven't yet embedded that into the code generator. Working on that now.
+
+Worked on the code generator for a while. Handled right recursive rules fairly well, but there are some edge cases that I certainly haven't covered yet and I think that it'll take a while to catch them all. I think that once I've completed doing that the next big necessary change is a better building and testing system for the generated parser. Right now the testing code is intertwined a little with the generator, which isn't great. I'll spend some time thinking about builds after I finish writing the first version of the code generator.
+
+Right now the special case I am considering is a right recursive rule alternative with multiple items between the first and last items. In the metagrammar this doesn't occur, but it is possible that it could occur in other grammars, and so I think it's probably a good idea to build support for that into this version of the code generator.
