@@ -1,5 +1,5 @@
-Date: 05/30/2020
-Entry: Figured I should probably keep some form of record as to what I've been doing on this project. It seems like it's going to grow into something fairly large so I am keen to begin documenting well.
+**Date:** 05/30/2020
+**Entry:** Figured I should probably keep some form of record as to what I've been doing on this project. It seems like it's going to grow into something fairly large so I am keen to begin documenting well.
 
 I've been working on the code for about a week now. Inspired by a reddit post that I can no longer remember I decided to take a deep dive into PEGs. That led me to Guido Van Rossum's talk "Writing a PEG parser for fun and profit", in which he explores the specifics of rewriting PGen (the python parser generator) as a PEG parser generator. He also produced an excellent blog series on the topic which has formed the foundation for this work so far.
 
