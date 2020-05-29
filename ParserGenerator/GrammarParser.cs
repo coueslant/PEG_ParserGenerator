@@ -55,7 +55,6 @@ namespace ParserGenerator
                 return _metas;
             }
             System.Console.WriteLine("Failed to parse metas at: [ position: " + _pos.ToString() + " ]");
-            Reset(_pos);
             return null;
         }
 
@@ -95,7 +94,6 @@ namespace ParserGenerator
                 return _rules;
             }
             System.Console.WriteLine("Failed to parse rules at: [ position: " + _pos.ToString() + " ]");
-            // Reset(_pos);
             return null;
         }
 
@@ -118,6 +116,7 @@ namespace ParserGenerator
             {
                 System.Console.WriteLine("Successfully parsed rule.");
                 _lineCount++;
+                _alternatives.AddRange(_moreAlts);
                 return new Rule(_name.String, _alternatives);
             }
 
@@ -176,7 +175,6 @@ namespace ParserGenerator
             }
             // failed to parse any alternatives
             System.Console.WriteLine("Failed to parse alternatives at: [ position: " + _pos.ToString() + " ]");
-            Reset(_pos);
             return null;
         }
 
@@ -236,7 +234,6 @@ namespace ParserGenerator
 
             // failed to parse more alternatives
             System.Console.WriteLine("Failed to parse more alternatives at: [ position: " + _pos.ToString() + " ]");
-            Reset(_pos);
             return null;
         }
 
@@ -261,7 +258,6 @@ namespace ParserGenerator
             }
             // didn't see any new item, return an indicator of that
             System.Console.WriteLine("Failed to parse items at: [ position: " + _pos.ToString() + " ]");
-            Reset(_pos);
             return null;
         }
 
@@ -329,7 +325,6 @@ namespace ParserGenerator
                 return _contentsString;
             }
             System.Console.WriteLine("Failed to parse action contents at: [ position: " + _pos.ToString() + " ]");
-            Reset(_pos);
             return "";
         }
 
@@ -375,7 +370,7 @@ namespace ParserGenerator
             if (_string != null)
             {
                 System.Console.WriteLine("Successfully parsed content.");
-                return _string.String;
+                return " " + _string.String + " ";
             }
 
             int _symbolPos = Mark();
@@ -397,10 +392,22 @@ namespace ParserGenerator
             if (_op != null)
             {
                 System.Console.WriteLine("Successfully parsed content.");
-                return _op.String;
+                return " " + _op.String + " ";
             }
 
             Reset(_opPos);
+
+            int _spacePos = Mark();
+
+            Token _space = Expect(" ");
+
+            if (_space != null)
+            {
+                System.Console.WriteLine("Successfully parsed content.");
+                return _space.String;
+            }
+
+            Reset(_spacePos);
 
             System.Console.WriteLine("Failed to parse action contents at: [ position: " + Tokenizer.Mark().ToString() + " ]");
             return "";

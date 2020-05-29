@@ -6,19 +6,26 @@ namespace ParserGenerator
     public class Parser
     {
         private Tokenizer _tokenizer;
+        private Memoizer _memoizer;
         private Dictionary<int, Memo> _memos;
         public string _parsing;
         public int _lineCount;
         public Tokenizer Tokenizer { get { return _tokenizer; } }
+
+        public Dictionary<int, Memo> Memos { get => _memos; }
+        public Memoizer Memoizer { get => _memoizer; }
+
         public Parser()
         {
             _tokenizer = new Tokenizer();
+            _memoizer = new Memoizer();
             _memos = new Dictionary<int, Memo>();
         }
 
         public int Mark()
         {
             int _pos = Tokenizer.Mark();
+            System.Console.WriteLine("Marking at [ " + _pos.ToString() + " ]");
             return _pos;
         }
 
@@ -32,7 +39,7 @@ namespace ParserGenerator
         {
             Token _token = Tokenizer.PeekToken();
 
-            while (_token.Type.ToString() != argument && (_token.Type.ToString() == "WHITESPACE" || string.IsNullOrWhiteSpace(_token.String)))
+            while (_token.Type.ToString() != argument && _token.String != argument && (_token.Type.ToString() == "WHITESPACE" || string.IsNullOrWhiteSpace(_token.String)))
             {
                 _token = Tokenizer.PeekToken();
                 if (_token.Type.ToString() == "WHITESPACE" || string.IsNullOrWhiteSpace(_token.String))
@@ -54,39 +61,7 @@ namespace ParserGenerator
 
         public Object Memoize(Func<Object> f)
         {
-            // for now, since we are not memoizing any functions with arguments, doing this here is okay
-            // TODO: Improve ability to handle arguments in the memoize wrapper, we're halfway there but not quite
-            return MemoizeWrapper(f, Tuple.Create(new Object()));
-        }
-
-        private Object MemoizeWrapper(Func<Object> f, Tuple<Object> args)
-        {
-            int _pos = Mark();
-            Memo _memo;
-            Object _result;
-            int _endPos;
-            if (!(_memos.TryGetValue(_pos, out _memo)))
-            {
-                Memo _newMemo = new Memo();
-                _memos.Add(_pos, _newMemo);
-                _memo = _newMemo;
-            }
-            Tuple<Func<Object>, Tuple<Object>> _key = Tuple.Create(f, args);
-            if (_memo.Memos.ContainsKey(_key))
-            {
-                Tuple<Object, int> _memoEntry;
-                _memo.Memos.TryGetValue(_key, out _memoEntry);
-                _result = _memoEntry.Item1;
-                _endPos = _memoEntry.Item2;
-                Reset(_endPos);
-            }
-            else
-            {
-                _result = f();
-                _endPos = Mark();
-                _memo.Memos.Add(_key, Tuple.Create(_result, _endPos));
-            }
-            return _result;
+            return Memoizer.Memoize(this, f);
         }
 
         // public Object MemoizeLeftRecWrapper(Func<Object> f)
