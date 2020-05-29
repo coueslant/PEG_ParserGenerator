@@ -16,7 +16,7 @@ namespace ParserGenerator
 
             _parserCodeString.AppendLine("using System;");
 
-            _parserCodeString.AppendLine("namespace Parser {");
+            _parserCodeString.AppendLine("namespace ParserGenerator {");
             _parserCodeString.AppendLine();
             _parserCodeString.AppendLine("class GeneratedParser : Parser {");
 
@@ -56,7 +56,7 @@ namespace ParserGenerator
 
                         if (_isString)
                         {
-                            _parserCodeString.AppendLine($"Expect({_item.ToString()});");
+                            _parserCodeString.AppendLine($"Expect({_item.ToString().Replace('\'', '"')});");
                         }
                         else if (_item.Equals(_item.ToUpper()))
                         {
