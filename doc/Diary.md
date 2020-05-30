@@ -1,4 +1,4 @@
-**Date:** 05/30/2020 \\
+**Date:** 05/30/2020
 **Entry:** Figured I should probably keep some form of record as to what I've been doing on this project. It seems like it's going to grow into something fairly large so I am keen to begin documenting well.
 
 I've been working on the code for about a week now. Inspired by a reddit post that I can no longer remember I decided to take a deep dive into PEGs. That led me to Guido Van Rossum's talk "Writing a PEG parser for fun and profit", in which he explores the specifics of rewriting PGen (the python parser generator) as a PEG parser generator. He also produced an excellent blog series on the topic which has formed the foundation for this work so far.
@@ -7,7 +7,7 @@ The last few days I have written a lot of code. So far I've written an tokenizer
 
 There are many interesting areas I could go with this project, and it encompasses a lot of what I am interested in. PEGs do not typically allow for left recursion, and as such parsers don't tend to implement it, but with some interesting graph theory and oracle programming it is possible to implement it. This is an avenue that will nicely meet some theoretical urges of mine in both math and computer science. Atop that, there are a lot of formal language niceties which can be explored in a parsing project like this. Questions like how large a grammar can I generate a parser for? What sorts of grammars and expressions can I parse? and may others. Lastly, the packrat parsing algorithm has only been around 15 years or so and is not widely used, but memory is cheap now and having a parser which can run in linear time is a tantilising prospect. Exploring the limits and limitations of packrat parsing and its place in the world as opposed to other methods is very exciting.
 
-**Date:** 05/31/2020 \\
+**Date:** 05/31/2020
 **Entry:** This morning's work consisted of figuring out an infinite recursion bug in the generated code, along with some cleanup of the code generator.
 
 The infinite recursion problem is interesting. In my handrolled pattern for the grammar parser I have a mechanism in place which prevents falling into infinite recursion when a right recursive alternate matches, but I haven't yet embedded that into the code generator. Working on that now.
@@ -16,7 +16,7 @@ Worked on the code generator for a while. Handled right recursive rules fairly w
 
 Right now the special case I am considering is a right recursive rule alternative with multiple items between the first and last items. In the metagrammar this doesn't occur, but it is possible that it could occur in other grammars, and so I think it's probably a good idea to build support for that into this version of the code generator.
 
-**Date:** 06/01/2020 \\
+**Date:** 06/01/2020
 **Entry:** Well, the sun has indeed risen on a new day, and a new month. I think today I might step away from code for the most part and think about building and documentation. Can't decide whether I want some internal, auto generated documentation or a more separated solution. Advantages and disadvantages to both I suppose.
 
 As for building and testing, I have no idea where to start. MSBuild is the most obvious candidate given that I have already got some of that infrastructure in place, otherwise I am not sure. The other problem is testing the generated parsers from the code generator. At the moment what I am doing is repaetedly commenting and uncommmenting some code in the parser generator main function which calls on the class created by the generator. This way causes issues if the generator hasn't been run or if the generated code contains errors, so I think I need to find a smoother way of doing it. There are a couple of candidates:
