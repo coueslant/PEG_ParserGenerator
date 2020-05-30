@@ -1,3 +1,0 @@
-Expr : Sum
-Sum : Value "+" Value | Value "-" Value | Value + | Value *
-Value : [0-9]+ | '(' Expr ')'

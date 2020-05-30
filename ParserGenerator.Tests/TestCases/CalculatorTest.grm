@@ -1,3 +1,0 @@
-start: expr NEWLINE { expr }
-expr: expr '+' term { expr + term } | expr '-' term { expr - term } | term { term }
-term: NUMBER { float(number.string) }
