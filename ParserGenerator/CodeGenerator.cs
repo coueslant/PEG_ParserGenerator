@@ -22,8 +22,10 @@ namespace ParserGenerator
             AddEnd(_codeStringBuilder);
 
             string _parserPath = @".\GeneratedParser\GeneratedParser.cs";
+            string _testPath = @".\ParserGenerator.Tests\GeneratedParser\GeneratedParser.cs";
 
             WriteParserFile(_parserPath, _codeStringBuilder);
+            WriteParserFile(_testPath, _codeStringBuilder);
         }
 
         private static void AddHeader(StringBuilder codeStringBuilder)

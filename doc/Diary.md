@@ -16,3 +16,17 @@ The infinite recursion problem is interesting. In my handrolled pattern for the 
 Worked on the code generator for a while. Handled right recursive rules fairly well, but there are some edge cases that I certainly haven't covered yet and I think that it'll take a while to catch them all. I think that once I've completed doing that the next big necessary change is a better building and testing system for the generated parser. Right now the testing code is intertwined a little with the generator, which isn't great. I'll spend some time thinking about builds after I finish writing the first version of the code generator.
 
 Right now the special case I am considering is a right recursive rule alternative with multiple items between the first and last items. In the metagrammar this doesn't occur, but it is possible that it could occur in other grammars, and so I think it's probably a good idea to build support for that into this version of the code generator.
+
+**Date:** 06/01/2020
+**Entry:** Well, the sun has indeed risen on a new day, and a new month. I think today I might step away from code for the most part and think about building and documentation. Can't decide whether I want some internal, auto generated documentation or a more separated solution. Advantages and disadvantages to both I suppose.
+
+As for building and testing, I have no idea where to start. MSBuild is the most obvious candidate given that I have already got some of that infrastructure in place, otherwise I am not sure. The other problem is testing the generated parsers from the code generator. At the moment what I am doing is repaetedly commenting and uncommmenting some code in the parser generator main function which calls on the class created by the generator. This way causes issues if the generator hasn't been run or if the generated code contains errors, so I think I need to find a smoother way of doing it. There are a couple of candidates:
+
+- Writing a main function in the generated code so that the class can be called directly with whatever string I'd like to parse
+- Making duplicate copies of the generated code in the tests directory and writing a new class to call upon code in there
+
+Again, advantages an disadvantages. I'll have a think.
+
+Also going to work today on writing up a proposal to turn this into my Honor's Thesis. There are a whole lot of super interesting ideas and fields which come together here (some of which I alluded to in my initial entry), so I think it'll allow me to work nicely amongst my interests.
+
+Didn't spend all that much time on anything today, it was too nice a day outside for that. I did manage to write the proposal and send it off in an email to Dr. Labouseur to see if he was interested. It's a good first step but I do feel like the project still requires a little bit more direction and depth than just "I'm gonna write a parser generator for an interesting form of grammar".
