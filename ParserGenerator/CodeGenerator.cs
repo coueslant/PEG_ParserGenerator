@@ -179,7 +179,7 @@ namespace ParserGenerator
 
             if (vars.Contains(_var))
             {
-                _var = _var + items.Count;
+                _var = _var + vars.Count;
             }
 
             codeStringBuilder.Append($"Object {_var} = ");

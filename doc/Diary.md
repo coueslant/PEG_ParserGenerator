@@ -24,8 +24,15 @@ As for building and testing, I have no idea where to start. MSBuild is the most 
 - Writing a main function in the generated code so that the class can be called directly with whatever string I'd like to parse
 - Making duplicate copies of the generated code in the tests directory and writing a new class to call upon code in there
 
-Again, advantages an disadvantages. I'll have a think.
+Again, advantages and disadvantages. I'll have a think.
 
 Also going to work today on writing up a proposal to turn this into my Honor's Thesis. There are a whole lot of super interesting ideas and fields which come together here (some of which I alluded to in my initial entry), so I think it'll allow me to work nicely amongst my interests.
 
 Didn't spend all that much time on anything today, it was too nice a day outside for that. I did manage to write the proposal and send it off in an email to Dr. Labouseur to see if he was interested. It's a good first step but I do feel like the project still requires a little bit more direction and depth than just "I'm gonna write a parser generator for an interesting form of grammar".
+
+** Write something about the 'right recursive rules' that i've been tackling actually being indirectly left recursive rules...**
+
+**Date:** 06/04/2020
+**Entry:** Haven't touched this project at all for the last couple of days, but, I did get support for making it my honors thesis yesterday. Hooray!
+
+Going to work for a little bit on converting the alanC grammar to a PEG and seeing what the generator does with it.
