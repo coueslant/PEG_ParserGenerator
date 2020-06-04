@@ -1,6 +1,6 @@
 Program : Block "$"
 Block : "{" StatementList "}"
-StatementList : Statement StatementList | ε
+StatementList : Statement StatementList | ""
 Statement : PrintStatement | AssignmentStatement | VarDecl | WhileStatement | IfStatement | Block
 PrintStatement : "print" "(" Expr ")"
 AssignmentStatement : Id "=" Expr
@@ -12,7 +12,7 @@ IntExpr : digit intop Expr | digit
 StringExpr : "\"" CharList "\""
 BooleanExpr : "(" Expr boolop Expr ")" | boolval
 Id : charLiteral
-CharList : charLiteral CharList | space CharList | ε
+CharList : charLiteral CharList | space CharList | ""
 type : "int" | "string" | "boolean" 
 charLiteral : "a" | "b" | "c" 
 space : " "

@@ -36,3 +36,7 @@ Didn't spend all that much time on anything today, it was too nice a day outside
 **Entry:** Haven't touched this project at all for the last couple of days, but, I did get support for making it my honors thesis yesterday. Hooray!
 
 Going to work for a little bit on converting the alanC grammar to a PEG and seeing what the generator does with it.
+
+Surprise, it's the end of the day and I didn't do jack. Well, I read Bryan Ford's original PEG paper front to back and understood maybe 20% of it. Granted it's a postgrad piece of work but still, I think I should be able to decipher things like that by now. I spent a good three or four hours reading it too. Anyway, feeling foggy and a little lost.
+
+There was one good piece though, Ford's metagrammar in full. I duplicated it in the test cases folder and I think I am going to pivot my GrammarParser implementation over to using that instead of Van Rossum's grammar. Seems like that would make sense right? I'll try to do that some more tomorrow, signing off from brain work for today now though.
